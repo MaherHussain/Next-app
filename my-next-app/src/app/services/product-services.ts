@@ -1,8 +1,11 @@
 import http from "./http";
 
 interface Product {
-    name: string,
-    price: string | number
+    _id: string
+    name: string
+    price: number
+    createdAt: string
+    updatedAt: string
 }
 
 interface Response {
