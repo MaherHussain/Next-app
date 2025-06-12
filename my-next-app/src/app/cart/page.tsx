@@ -1,7 +1,9 @@
 "use client";
+
 import { useGetCartById } from "../queries/cart";
 import OrderOverview, { Item } from "../components/order-overview";
 import { useCartId } from "@/hooks/useCartId";
+import OrderDetails from "../components/order/order-details";
 
 export default function cart() {
   const cartId = useCartId();
@@ -21,7 +23,9 @@ export default function cart() {
   });
   return (
     <div className="flex flex-row flex-wrap ">
-      <div className="w-1/2">Rest order data</div>
+      <div className="w-1/2 border">
+        <OrderDetails />
+      </div>
       <div className="w-1/2">
         {isPending ? (
           <div>...loading</div>
