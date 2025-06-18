@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { FiShoppingCart } from "react-icons/fi";
 import { useGetCartById } from "../queries/cart";
 import Link from "next/link";
-import { useCartId } from "@/hooks/useCartId";
+import { useCart } from "@/hooks/useCart";
 
 export default function Cart() {
-  const cartId = useCartId();
+  const { cartId } = useCart();
   const { data: cart } = useGetCartById(cartId || "");
 
   const totalItems =

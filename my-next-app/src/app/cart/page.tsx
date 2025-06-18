@@ -1,14 +1,15 @@
 "use client";
-
 import { useGetCartById } from "../queries/cart";
-import OrderOverview, { Item } from "../components/order-overview";
-import { useCartId } from "@/hooks/useCartId";
+import OrderOverview, { Item } from "../components/order/order-overview";
+import { useCart } from "@/hooks/useCart";
 import OrderDetails from "../components/order/order-details";
+import LoadingSpinner from "../components/shared/loading-spinner";
 
 export default function cart() {
-  const cartId = useCartId();
+  const { cartId } = useCart();
 
   const { data: cartData, isPending } = useGetCartById(cartId || "");
+
   const items: Item[] = cartData?.items.map((item: any) => {
     return {
       product: item.product,
@@ -28,7 +29,9 @@ export default function cart() {
       </div>
       <div className="w-1/2">
         {isPending ? (
-          <div>...loading</div>
+          <div className="w-full h-full mt-[50%] ml-[50%]">
+            <LoadingSpinner size="large" />
+          </div>
         ) : (
           <OrderOverview items={items} total={cartData.total} />
         )}

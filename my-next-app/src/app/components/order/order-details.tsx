@@ -7,7 +7,11 @@ import { IoTimeOutline } from "react-icons/io5";
 import { FcOk } from "react-icons/fc";
 import CustomerDetailsModal from "./customer-details-modal";
 import TimeSelectModal from "./time-select-modal";
-
+import { ContactData } from "@/app/types";
+import { usePlaceOrder } from "@/app/queries/order";
+import { useCart } from "@/hooks/useCart";
+import DialogModal from "../shared/dialog-modal";
+import LoadingSpinner from "../shared/loading-spinner";
 const sections = [
   {
     id: "contact",
@@ -38,25 +42,18 @@ const sections = [
   },
 ];
 
-type ContactData = {
-  name: string;
-  phone: string;
-  email: string;
-  address?: string;
-};
-
 type PickupData = {
-  contactData: ContactData | null;
-  selectedTime: string | null;
-  orderMethod: string | null;
-  paymentMethod: string | null;
+  contactData: ContactData;
+  selectedTime: string;
+  orderMethod: string;
+  paymentMethod: string;
 };
 
 function OrderDetails() {
   const [isOpen, setIsOpen] = useState(false);
   const [openModal, setOpenModal] = useState<string | null>(null);
 
-  const [pickupData, setPickupData] = useState<PickupData>({
+  const initialpickupData = {
     contactData: {
       name: "",
       email: "",
@@ -64,9 +61,15 @@ function OrderDetails() {
       address: "",
     },
     selectedTime: "",
-    orderMethod: "pick up",
-    paymentMethod: "Cash",
-  });
+    orderMethod: "pickup",
+    paymentMethod: "cash",
+  };
+  const [pickupData, setPickupData] = useState<PickupData>(initialpickupData);
+
+  const { mutate, isPending, data, isSuccess } = usePlaceOrder(() =>
+    setPickupData(initialpickupData)
+  );
+  const { items, total } = useCart();
   // TODO: we need to add more options for order method and payment method
   function onSaveContactData(data: ContactData) {
     setPickupData((prev) => ({
@@ -74,6 +77,7 @@ function OrderDetails() {
       contactData: { ...data },
     }));
   }
+
   function isSectionComplete(id: string, data: PickupData): boolean {
     if (id === "contact") {
       const c = data.contactData;
@@ -99,7 +103,7 @@ function OrderDetails() {
       !!data.paymentMethod
     );
   }
-  function onSaveTime(selectedTime: string | null) {
+  function onSaveTime(selectedTime: string) {
     setPickupData((prev) => {
       return {
         ...prev,
@@ -107,6 +111,18 @@ function OrderDetails() {
       };
     });
   }
+  function onPlaceOrder() {
+    const payload = {
+      items: items,
+      contactData: pickupData.contactData,
+      total: total,
+      selectedTime: pickupData.selectedTime,
+      orderMethod: pickupData.orderMethod,
+      paymentMethod: pickupData.paymentMethod,
+    };
+    mutate(payload);
+  }
+
   return (
     <div className="border-b p-5 bg-gray-50 rounded-md">
       {sections.map((section, index) => {
@@ -162,7 +178,6 @@ function OrderDetails() {
             onSaveTime(payload);
           }}
           onClose={() => {
-            0;
             setOpenModal(null);
             setIsOpen(false);
           }}
@@ -170,16 +185,26 @@ function OrderDetails() {
         />
       )}
       <button
+        onClick={onPlaceOrder}
         disabled={!isDisabled(pickupData)}
         className={`w-full py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 to-black 
       transition ${
-        !isDisabled(pickupData)
+        !isDisabled(pickupData || isPending)
           ? "opacity-50 cursor-not-allowed"
           : "hover:opacity-90"
       }`}
       >
-        Place Order
+        <div className="flex items-center justify-center">
+          {isPending && <LoadingSpinner />}
+          <span>Place Order</span>
+        </div>
       </button>
+      {isSuccess && (
+        <DialogModal title="Order Confirmation">
+          <p>{data?.message}</p>
+          <p>selectedTime : {data?.data.selectedTime}</p>
+        </DialogModal>
+      )}
     </div>
   );
 }

@@ -6,7 +6,7 @@ export async function GET(req: NextRequest,
     { params }: { params: { cartId: string } }) {
     await dbConnect()
     try {
-        const { cartId } = params
+        const { cartId } = await params
         const cart = await Cart.findOne({ cartId })
         if (!cart) {
             return NextResponse.json({ items: [] }, { status: 200 })
