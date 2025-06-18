@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import Modal from "../Modal";
-
+import Modal from "../shared/Modal";
+import { generateTimeOptions } from "@/app/utils/helpers/helpers";
 type Props = {
   onClose: () => void;
   isOpen: boolean;
-  onSave: (selectedTime: string | null) => void;
+  onSave: (selectedTime: string) => void;
   selectedTime: string | null;
 };
 
@@ -17,8 +17,8 @@ export default function TimeSelectModal({
   const [selectedOption, setSelectedOption] = useState<"ASAP" | "custom">(
     "ASAP"
   );
-  const [customTime, setCustomTime] = useState<string | null>("");
-
+  const [customTime, setCustomTime] = useState<string>("");
+  const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
     if (selectedTime && selectedTime !== "ASAP") {
       setCustomTime(selectedTime);
@@ -26,19 +26,20 @@ export default function TimeSelectModal({
     }
   }, [selectedTime]);
 
-  const handleChange = () => {
+  useEffect(() => {
+    const disabled = selectedOption === "custom" && !customTime;
+    setIsDisabled(disabled);
+  }, [selectedOption, customTime]);
+
+  const handleSave = () => {
     const selectedTime = selectedOption === "ASAP" ? "ASAP" : customTime;
     onSave(selectedTime);
     onClose();
   };
+
+  const timeOptions = generateTimeOptions(5, "16:00", "21:00");
   return (
-    <Modal
-      isDisabled={selectedOption === "custom" && !customTime}
-      title="Select Time"
-      isOpen={isOpen}
-      onClose={onClose}
-      handleSave={handleChange}
-    >
+    <Modal title="Select Time" isOpen={isOpen} onClose={onClose}>
       <div>
         <label className="flex items-center gap-2">
           <input
@@ -63,14 +64,30 @@ export default function TimeSelectModal({
             />
             <span>Custom Time</span>
           </div>
-          <input
-            type="time"
+          <select
             disabled={selectedOption !== "custom"}
-            value={selectedOption === "custom" ? (customTime as string) : ""}
+            value={customTime}
             onChange={(e) => setCustomTime(e.target.value)}
-            className="border rounded-md p-2 w-full mt-1 disabled:bg-gray-100"
-          />
+            className="border rounded-md p-2 w-full disabled:bg-gray-100"
+          >
+            <option value="">Select time</option>
+            {timeOptions.map((time) => (
+              <option key={time} value={time}>
+                {time}
+              </option>
+            ))}
+          </select>
         </label>
+        <button
+          disabled={isDisabled}
+          onClick={handleSave}
+          className={`w-full py-3 mt-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 to-black 
+      transition ${
+        isDisabled ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+      }`}
+        >
+          Save
+        </button>
       </div>
     </Modal>
   );

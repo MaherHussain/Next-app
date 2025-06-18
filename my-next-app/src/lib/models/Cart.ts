@@ -1,22 +1,13 @@
 import { Schema, model, models, Document, Types } from "mongoose";
+import { Item } from "@/app/types";
 
-export interface Item {
-    product: { id: Types.ObjectId, name: string, price: number }
-    ingredients?: {
-        drissing?: string[],
-        fravaelge?: string[],
-        smorelse?: string[],
-
-    },
-    quantity: number
-}
 export interface ICart extends Document {
     cartId: string,
     total: number,
     items: Item[]
 }
 
-const itemSchema = new Schema<Item>(
+export const itemSchema = new Schema<Item>(
     {
         product: {
             id: { type: Schema.Types.ObjectId, ref: 'Product', required: true },

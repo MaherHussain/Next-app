@@ -1,12 +1,7 @@
 import { useState, useEffect } from "react";
-import Modal from "../Modal";
-type ContactData = {
-  name: string;
-  phone: string;
-  email: string;
-  address?: string;
-};
-
+import Modal from "../shared/Modal";
+import { ContactData } from "@/app/types";
+import InputTextField from "../shared/input-text-fied";
 type Props = {
   onClose: () => void;
   isOpen: boolean;
@@ -21,69 +16,121 @@ function CustomerDetailsModal({ onClose, isOpen, onSave, contactData }: Props) {
     email: "",
     address: "",
   });
-
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [errors, setErrors] = useState({
+    email: "",
+    phone: "",
+  });
+  const [touched, setTouched] = useState({
+    email: false,
+    phone: false,
+  });
   useEffect(() => {
     if (contactData) {
       setFormData({ ...contactData });
     }
   }, [contactData]);
-  const handleChange = (e: any) => {
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name } = e.target;
+    setTouched((prev) => ({ ...prev, [name]: true }));
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    if (name === "email") {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      setErrors((prev) => ({
+        ...prev,
+        email: emailRegex.test(value) ? "" : "Invalid email format",
+      }));
+    }
+    if (name === "phone") {
+      const isOnlyDigits = /^[0-9]*$/.test(value);
+      setErrors((prev) => ({
+        ...prev,
+        phone: isOnlyDigits ? "" : "Phone must be numeric",
+      }));
+    }
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
   };
+
+  useEffect(() => {
+    const isFormValid =
+      !!formData.name &&
+      !!formData.phone &&
+      !!formData.email &&
+      errors.email === "" &&
+      errors.phone === "";
+    setIsDisabled(!isFormValid);
+  }, [formData, errors]);
 
   const handleSave = () => {
     onSave(formData);
     onClose();
   };
   if (!isOpen) return null;
+
   return (
-    <Modal
-      isDisabled={!(!!formData?.name && !!formData?.email && !!formData?.phone)}
-      title={"Customer details"}
-      isOpen={isOpen}
-      onClose={onClose}
-      handleSave={handleSave}
-    >
-      <div className="space-y-4">
-        <input
-          name="name"
+    <Modal title={"Customer details"} isOpen={isOpen} onClose={onClose}>
+      <form className="space-y-4">
+        <InputTextField
           type="text"
-          placeholder="Name"
           value={formData.name}
+          placeholder="Your name"
+          label="Name"
+          isRequired
           onChange={handleChange}
-          required
-          className="w-full border p-2 rounded-lg"
+          inputName="name"
         />
-        <input
-          name="phone"
+        <InputTextField
           type="tel"
-          placeholder="Phone Number"
           value={formData.phone}
+          placeholder="your phone"
+          label="Phone number"
+          isRequired
           onChange={handleChange}
-          required
-          className="w-full border p-2 rounded-lg"
+          inputName="phone"
+          error={touched.phone ? errors.phone : ""}
+          onBlur={handleBlur}
         />
-        <input
-          name="email"
+
+        <InputTextField
           type="email"
-          placeholder="Email"
           value={formData.email}
+          placeholder="your email"
+          label="Email"
+          isRequired
           onChange={handleChange}
-          required
-          className="w-full border p-2 rounded-lg"
+          inputName="email"
+          error={touched.email ? errors.email : ""}
+          onBlur={handleBlur}
         />
-        <input
-          name="address"
+
+        <InputTextField
           type="text"
-          placeholder="Address (optional)"
           value={formData.address}
+          placeholder="your address"
+          label="Address"
+          isRequired={false}
           onChange={handleChange}
-          className="w-full border p-2 rounded-lg"
+          inputName="address"
         />
-      </div>
+        {isDisabled}
+        <button
+          disabled={isDisabled}
+          onClick={handleSave}
+          className={`w-full py-3 mt-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 to-black 
+      transition ${
+        isDisabled ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
+      }`}
+        >
+          Save
+        </button>
+      </form>
     </Modal>
   );
 }

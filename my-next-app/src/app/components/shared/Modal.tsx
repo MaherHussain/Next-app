@@ -1,26 +1,21 @@
 "use client";
 import { useEffect, useRef, ReactNode } from "react";
 
-type ModalPorps = {
+type ModalProps = {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   children: ReactNode;
-  handleSave: () => void;
-  isDisabled: boolean;
 };
 export default function Modal({
   isOpen,
   onClose,
   title,
   children,
-  handleSave,
-  isDisabled,
-}: ModalPorps) {
+}: ModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    console.log(isDisabled);
     const handleClickOutside = (event: MouseEvent) => {
       if (
         modalRef.current &&
@@ -53,16 +48,6 @@ export default function Modal({
         </button>
         {title && <h2 className="text-xl font-semibold mb-4">{title}</h2>}
         {children}
-        <button
-          disabled={isDisabled}
-          onClick={handleSave}
-          className={`w-full py-3 mt-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 to-black 
-      transition ${
-        isDisabled ? "opacity-50 cursor-not-allowed" : "hover:opacity-90"
-      }`}
-        >
-          Save
-        </button>
       </div>
     </div>
   );

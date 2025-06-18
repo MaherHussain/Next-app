@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Cart, { ICart, Item } from '@/lib/models/Cart';
+import Cart, { ICart } from '@/lib/models/Cart';
+import { Item } from '@/app/types';
 
 function ingredientsMatch(a: any, b: any) {
     return (

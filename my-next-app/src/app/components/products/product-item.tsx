@@ -1,6 +1,6 @@
 "use client";
 
-import IngredientsSelection from "../ingredients-selection";
+import IngredientsSelection from "./ingredients-selection";
 import { useState, useEffect, useRef } from "react";
 import { Product } from "./products";
 import { PriceFormatter } from "@/app/utils/helpers/helpers";

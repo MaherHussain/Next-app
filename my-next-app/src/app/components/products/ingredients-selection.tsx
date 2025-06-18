@@ -1,9 +1,9 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { Product } from "./products/products";
-import { useAddToCart } from "../queries/cart";
+import { Product } from "./products";
+import { useAddToCart } from "../../queries/cart";
 import { nanoid } from "nanoid";
-import { PriceFormatter } from "../utils/helpers/helpers";
+import { PriceFormatter } from "../../utils/helpers/helpers";
 type Ingredients = {
   smorelse: string[];
   drissing: string[];

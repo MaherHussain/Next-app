@@ -1,5 +1,5 @@
 import React from "react";
-import { PriceFormatter } from "../utils/helpers/helpers";
+import { PriceFormatter } from "../../utils/helpers/helpers";
 export interface Item {
   product: { name: string; id: string; price: number };
   quantity: number;
@@ -40,9 +40,7 @@ export default function OrderOverview({
                   <div className="space-x-4">
                     {item.ingredients.smorelse.length ? (
                       item.ingredients.smorelse.map((s, index) => (
-                        <div key={index} className="">
-                          {s}
-                        </div>
+                        <div key={index}>{s}</div>
                       ))
                     ) : (
                       <div className="px-5">-</div>
@@ -51,9 +49,7 @@ export default function OrderOverview({
                   <div className="space-x-4">
                     {item.ingredients.drissing.length ? (
                       item.ingredients.drissing.map((d, index) => (
-                        <span key={index} className="">
-                          {d}
-                        </span>
+                        <span key={index}>{d}</span>
                       ))
                     ) : (
                       <span>-</span>
