@@ -1,6 +1,6 @@
 "use client";
-
 import { useGetProducts } from "../../queries/products";
+import LoadingSpinner from "../shared/loading-spinner";
 import ProductItem from "./product-item";
 export interface Product {
   id: string;
@@ -16,21 +16,28 @@ export default function Products() {
       price: product.price,
     };
   });
+
   return (
     <div className="bg-white text-black  w-500 p-20">
-      <h1>Products</h1>
-
-      <div className="flex flex-row gap-20 flex-wrap">
-        {isLoading && <span>loading....</span>}
-        {productsArr &&
-          productsArr?.map((product) => {
-            return (
-              <div key={product?.id}>
-                <ProductItem product={product} />
-              </div>
-            );
-          })}
-      </div>
+      {isLoading && (
+        <div className="flex flex-row justify-center mt-[15%] ml-[15%]">
+          <LoadingSpinner size="large" />
+        </div>
+      )}
+      {productsArr && (
+        <div className="flex flex-col justify-start">
+          <h1 className="py-5">Products</h1>
+          <div className="flex justify-start flex-row gap-7 flex-wrap">
+            {productsArr?.map((product) => {
+              return (
+                <div key={product?.id}>
+                  <ProductItem product={product} />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

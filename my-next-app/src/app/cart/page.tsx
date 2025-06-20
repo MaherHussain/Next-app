@@ -25,23 +25,32 @@ export default function cart() {
   });
 
   return (
-    <div className=" flex items-center justify-center w-full h-full">
+    <div className="">
       {isPending && (
-        <div className="mt-[15%]">
+        <div className="mt-[15%] ml-[50%]">
           <LoadingSpinner size="large" />
         </div>
       )}
-      {!cartData?.length && !isPending && (
+      {!cartData?.items.length && !isPending && (
         <div className="flex items-center justify-center flex-col mt-[10%]">
           <p className="my-5">No Items have been added yet</p>
 
           <Link
-            className="w-full text-center p-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 to-black 
-      transition"
+            className=" text-center px-10 py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-500 to-black transition"
             href="/"
           >
             Shop now
           </Link>
+        </div>
+      )}
+      {cartData?.items.length && !isPending && (
+        <div className="flex  flex-col md:flex-row gap-3">
+          <div className="w-full md:w-1/2">
+            <OrderDetails />
+          </div>
+          <div className="w-full md:w-1/2">
+            <OrderOverview items={items} total={cartData?.total} />
+          </div>
         </div>
       )}
     </div>
