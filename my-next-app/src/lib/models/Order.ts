@@ -29,10 +29,7 @@ const orderSchema: Schema<IOrder> | null = new Schema({
     total: { type: Number, default: 0 },
     contactData: {
         name: {
-            type: String, required: true, validate: {
-                validator: (v: string): boolean => /\S+@\S+\.\S+/.test(v),
-                message: 'Email is not valid',
-            }
+            type: String, required: true,
         },
         phone: {
             type: String, required: true, validate: {
@@ -40,7 +37,12 @@ const orderSchema: Schema<IOrder> | null = new Schema({
                 message: 'Phone number should be 10-digits nmber'
             }
         },
-        email: { type: String, required: true },
+        email: {
+            type: String, required: true, validate: {
+                validator: (v: string): boolean => /\S+@\S+\.\S+/.test(v),
+                message: 'Email is not valid',
+            }
+        },
         address: { type: String }
     },
     selectedTime: { type: String },
