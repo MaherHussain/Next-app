@@ -13,7 +13,7 @@ const PartnerSchema: Schema<IPartner> = new Schema({
     restaurantId: { type: Schema.Types.ObjectId, ref: 'Restaurant', required: true },
     partnerName: { type: String, required: true },
     phone: {
-        type: String, required: true, validate: {
+        type: String, validate: {
             validator: (v: string): boolean => /\d{10}/.test(v),
             message: 'Phone number should be 10-digits nmber'
         }

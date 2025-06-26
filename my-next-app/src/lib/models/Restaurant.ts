@@ -18,7 +18,7 @@ interface IRestaurant extends Document {
 }
 
 const RestaurantSchema: Schema<IRestaurant> = new Schema({
-    name: { type: String, unique: true },
+    name: { type: String, unique: true, required: true },
     address: { type: String, unique: true },
     openHours: {
         monday: { start: { type: String }, end: { type: String } },
