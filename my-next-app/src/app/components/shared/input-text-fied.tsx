@@ -23,7 +23,7 @@ function InputTextField({
   onBlur,
 }: Props) {
   return (
-    <div className="relative mt-6 ">
+    <div className="relative mt-3 ">
       <input
         type={type}
         className={`peer w-full border  pl-2 pt-2 h-10 placeholder:text-transparent ${
@@ -46,9 +46,9 @@ function InputTextField({
         <span className="text-sm pl-2 text-gray-500">required</span>
       )}
       {error && (
-        <span id={`${inputName}-error`} className="text-sm text-red-500 pl-2">
+        <div className="text-sm text-red-500 pl-2">
           {error}
-        </span>
+        </div>
       )}
     </div>
   );

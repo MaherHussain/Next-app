@@ -119,7 +119,6 @@ function CustomerDetailsModal({ onClose, isOpen, onSave, contactData }: Props) {
           onChange={handleChange}
           inputName="address"
         />
-        {isDisabled}
         <button
           disabled={isDisabled}
           onClick={handleSave}
