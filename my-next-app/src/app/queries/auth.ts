@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createPartner } from "../services/partner-services";
+import { useMutation } from "@tanstack/react-query";
+import { loginPartner, logoutPartner, createPartner } from "@/app/services/auth-services";
 
 export function useCreatePartner(onSuccessCallback?: () => void) {
     return useMutation({
@@ -13,3 +13,15 @@ export function useCreatePartner(onSuccessCallback?: () => void) {
         },
     })
 }
+
+export const useLoginPartner = () => {
+    return useMutation({
+        mutationFn: loginPartner,
+    });
+};
+
+export const useLogoutPartner = () => {
+    return useMutation({
+        mutationFn: logoutPartner,
+    });
+}; 
