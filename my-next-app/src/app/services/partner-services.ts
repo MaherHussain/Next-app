@@ -5,14 +5,20 @@ interface Partner {
     email: string;
     password: string;
     restaurantName: string;
+    restaurantAddress: string;
 }
 
-interface Response {
+interface AuthResponse {
     message: string;
-    data: Partner;
+    user: {
+        id: string;
+        email: string;
+        partnerName: string;
+        restaurantName: string;
+    };
 }
 
-export async function createPartner(payload: Partner): Promise<Response> {
-    const response = await http.post<Response>('/partner/register', payload);
+export async function createPartner(payload: Partner): Promise<AuthResponse> {
+    const response = await http.post<AuthResponse>('/auth/partner/register', payload);
     return response.data;
 }
