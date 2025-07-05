@@ -1,7 +1,7 @@
 "use client";
 import {useEffect, useState} from "react";
-import InputTextField from "../shared/input-text-fied";
-import Button from "../shared/Button";
+import InputTextField from "../../shared/input-text-fied";
+import Button from "../../shared/Button";
 import { useCreatePartner } from "@/app/queries/partner";
 
 export default function Register() {
@@ -112,9 +112,10 @@ type FieldName = "partnerName" | "restaurantName" | "restaurantAddress" | "email
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         createPartner(formData, {
-            onSuccess: () => {
-                console.log("Partner created successfully");
-                setFormData(initialFormData);
+            onSuccess: (data) => {
+               /*  console.log("Partner created successfully and logged in", data) */;
+                // Auto-login successful, redirect to dashboard
+                window.location.href = '/partner/dashboard';
             },
             onError: (error) => {
             const response = error.response?.data;
