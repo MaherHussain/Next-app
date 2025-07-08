@@ -6,7 +6,6 @@ interface IPartner extends Document {
     phone: string,
     email: string,
     password: string
-
 }
 
 const PartnerSchema: Schema<IPartner> = new Schema({
