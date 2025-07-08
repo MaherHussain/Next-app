@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
         const { email, password } = parsed.data;
 
         // Find user by email
-        const partner = await Partner.findOne({ email }).populate('restaurantId');
+        const partner = await Partner.findOne({ email });
         if (!partner) {
             return NextResponse.json({ message: 'Invalid credentials' }, { status: 401 });
         }
@@ -45,10 +45,6 @@ export async function POST(req: NextRequest) {
             .setExpirationTime('7d')
             .sign(new TextEncoder().encode(process.env.JWT_SECRET!));
 
-        // Get restaurant name safely
-        const restaurantName = partner.restaurantId && typeof partner.restaurantId === 'object' && 'name' in partner.restaurantId
-            ? (partner.restaurantId as any).name
-            : 'Unknown Restaurant';
 
         // Create response with HTTP-only cookie
         const response = NextResponse.json({
@@ -57,7 +53,6 @@ export async function POST(req: NextRequest) {
                 id: partner._id,
                 email: partner.email,
                 partnerName: partner.partnerName,
-                restaurantName
             }
         });
 
