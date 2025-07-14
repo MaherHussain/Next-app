@@ -37,8 +37,9 @@ export async function POST(req: NextRequest) {
 
         // Create JWT token
         const token = await new SignJWT({
-            userId: partner._id,
+            userId: (partner._id as any).toString(),
             email: partner.email,
+            restaurantId: (partner.restaurantId as any).toString(),
             type: 'partner'
         })
             .setProtectedHeader({ alg: 'HS256' })

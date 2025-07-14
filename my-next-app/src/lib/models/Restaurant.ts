@@ -1,4 +1,3 @@
-import { timeStamp } from "console";
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 interface IRestaurant extends Document {
