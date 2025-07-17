@@ -1,8 +1,8 @@
 "use client";
 import { useUser } from "@/app/utils/providers/UserContext";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
-import UserProfile from "@/app/components/shared/UserProfile";
-import RestaurantInfo from "../components/restaurant-info";
+/* import UserProfile from "@/app/components/shared/UserProfile";
+import RestaurantInfo from "../components/restaurant-info */
 
 export default function PartnerDashboard() {
   const { user, isLoading: userLoading, isError: userError } = useUser();
@@ -50,7 +50,7 @@ export default function PartnerDashboard() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Overview</h1>
         <p className="text-gray-600 mt-1">
           Welcome back, {user.partnerName}! Here's what's happening with your
           restaurant.

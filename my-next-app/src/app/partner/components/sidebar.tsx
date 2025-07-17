@@ -16,10 +16,10 @@ export default function Sidebar({ restaurantName }: SidebarProps) {
   const pathname = usePathname();
 
   const navigation = [
-    { name: "Dashboard", href: "/partner/dashboard", icon: AiOutlineHome },
-    { name: "Orders", href: "/partner/orders", icon: AiOutlineFileText },
-    { name: "Products", href: "/partner/products", icon: AiOutlineShopping },
-    { name: "Profile", href: "/partner/profile", icon: AiOutlineUser },
+    { name: "Overview", href: "/partner/dashboard/overview", icon: AiOutlineHome },
+    { name: "Orders", href: "/partner/dashboard/orders", icon: AiOutlineFileText },
+    { name: "Products", href: "/partner/dashboard/products", icon: AiOutlineShopping },
+    { name: "Profile", href: "/partner/dashboard/profile", icon: AiOutlineUser },
   ];
 
   return (

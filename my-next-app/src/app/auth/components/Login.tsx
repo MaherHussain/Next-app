@@ -1,15 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import InputTextField from "../../shared/input-text-fied";
-import Button from "../../shared/Button";
+import InputTextField from "@/app/components/shared/input-text-fied";
+import Button from "@/app/components/shared/Button";
 import { useLoginPartner } from "@/app/queries/auth";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const initialFormData = {
     email: "",
     password: "",
   };
+  const {push} = useRouter()
   const [formData, setFormData] = useState(initialFormData);
 
   const { mutate: login, isPending } = useLoginPartner();
@@ -77,8 +79,8 @@ export default function Login() {
     login(formData, {
       onSuccess: (data: any) => {
         console.log("Login successful", data);
-        // TODO: Store token and redirect
-        window.location.href = "/partner/dashboard";
+
+        push("/partner/dashboard/overview") ;
 
         setFormData(initialFormData);
       },
