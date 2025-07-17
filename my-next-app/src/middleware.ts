@@ -35,7 +35,6 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    console.log('➡️ Not a protected route, continuing');
     // For non-protected routes, just continue
     return NextResponse.next();
 }

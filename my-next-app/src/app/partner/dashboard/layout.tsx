@@ -3,10 +3,12 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/app/utils/providers/UserContext";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
-import Sidebar from "./components/sidebar";
-import Header from "./components/header";
-import { useGetRestaurant } from "../queries/restaurant";
-import Button from "../components/shared/Button";
+import Sidebar from "../components/sidebar"
+import Header from "../components/header";
+import { useGetRestaurant } from "@/app/queries/restaurant";
+import Button from "@/app/components/shared/Button";
+import { NotificationProvider } from "./NotificationContext";
+import NotificationList from "./NotificationList";
 export default function PartnerLayout({
   children,
 }: {
@@ -50,7 +52,10 @@ export default function PartnerLayout({
   }
 
   return (
+    <NotificationProvider>
     <div className="min-h-screen bg-gray-50">
+      {/* Notification List */}
+      <NotificationList />
       {/* Header */}
       <Header
         restaurantName={restaurantName?.name as string}
@@ -66,5 +71,6 @@ export default function PartnerLayout({
         <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
+    </NotificationProvider>
   );
 }

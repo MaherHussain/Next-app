@@ -5,7 +5,7 @@ import { useLogoutPartner } from '@/app/queries/auth'
 import { useRouter } from 'next/navigation'
 
 type PropsType =  {
-    restaurantName: string, 
+    restaurantName: string | undefined, 
     partnerName: string,
     email: string
 }
