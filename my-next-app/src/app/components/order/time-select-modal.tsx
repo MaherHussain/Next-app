@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import Modal from "../shared/Modal";
-import { generateTimeOptions } from "@/app/utils/helpers/helpers";
+import {
+  currentTimeRounded,
+  generateTimeOptions,
+} from "@/app/utils/helpers/helpers";
 type Props = {
   onClose: () => void;
   isOpen: boolean;
@@ -32,7 +35,8 @@ export default function TimeSelectModal({
   }, [selectedOption, customTime]);
 
   const handleSave = () => {
-    const selectedTime = selectedOption === "ASAP" ? "ASAP" : customTime;
+    const selectedTime =
+      selectedOption === "ASAP" ? currentTimeRounded() : customTime;
     onSave(selectedTime);
     onClose();
   };
@@ -45,12 +49,12 @@ export default function TimeSelectModal({
           <input
             type="radio"
             name="time"
-            value="ASAP"
+            value={`ASAP`}
             checked={selectedOption === "ASAP"}
             onChange={() => setSelectedOption("ASAP")}
             className=" accent-orange-500"
           />
-          <span>ASAP</span>
+          <span>ASAP ({currentTimeRounded()})</span>
         </label>
         <label className="flex items-start flex-col gap-2">
           <div className="flex items-center gap-2">

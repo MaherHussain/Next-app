@@ -13,6 +13,7 @@ export interface IOrder extends Document {
     paymentMethod: string
     total: number
     status: string
+    restaurantId: Types.ObjectId
 }
 // Counter schema for order number auto-increment
 const CounterSchema = new Schema({
@@ -27,6 +28,7 @@ const orderSchema: Schema<IOrder> | null = new Schema({
     orderNumber: { type: String, required: true, unique: true },
     items: [itemSchema],
     total: { type: Number, default: 0 },
+    restaurantId: { type: Schema.Types.ObjectId, ref: 'Restaurant', required: true },
     contactData: {
         name: {
             type: String, required: true,

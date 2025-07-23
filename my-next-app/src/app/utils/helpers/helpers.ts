@@ -45,3 +45,14 @@ export function generateTimeOptions(intervalMinutes: number, opening: string, cl
 
     return times;
 }
+
+export function currentTimeRounded() {
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 10);
+
+    const hours = now.getHours().toString().padStart(2, "0");
+    const minutes = now.getMinutes().toString().padStart(2, "0");
+
+    return `${hours}:${minutes}`;
+}

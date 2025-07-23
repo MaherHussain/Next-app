@@ -12,6 +12,7 @@ import { usePlaceOrder } from "@/app/queries/order";
 import { useCart } from "@/hooks/useCart";
 import DialogModal from "../shared/dialog-modal";
 import LoadingSpinner from "../shared/loading-spinner";
+import { useGetRestaurant } from "@/app/queries/restaurant";
 const sections = [
   {
     id: "contact",
@@ -70,6 +71,7 @@ function OrderDetails() {
     setPickupData(initialpickupData)
   );
   const { items, total } = useCart();
+  const { data: restaurantData } = useGetRestaurant();
   // TODO: we need to add more options for order method and payment method
   function onSaveContactData(data: ContactData) {
     setPickupData((prev) => ({
@@ -112,6 +114,7 @@ function OrderDetails() {
     });
   }
   function onPlaceOrder() {
+    const restaurantId = restaurantData?.data?._id;
     const payload = {
       items: items,
       contactData: pickupData.contactData,
@@ -119,6 +122,7 @@ function OrderDetails() {
       selectedTime: pickupData.selectedTime,
       orderMethod: pickupData.orderMethod,
       paymentMethod: pickupData.paymentMethod,
+      restaurantId, // include restaurantId in the payload
     };
     mutate(payload);
   }
