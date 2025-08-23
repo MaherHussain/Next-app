@@ -23,3 +23,17 @@ export interface PickupData {
     orderMethod: string | null;
     paymentMethod: string | null;
 };
+export interface Order {
+    _id: string;
+    orderNumber: string;
+    items: Item[];
+    contactData: ContactData | null;
+    selectedTime: string;
+    paymentMethod: string;
+    total: number;
+    orderMethod: string;
+    status: string;
+    createdAt?: string;
+    estimatedTime?: string | number; // Optional, can be a string or number
+    // Add more fields as needed
+}

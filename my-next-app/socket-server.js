@@ -7,11 +7,6 @@ const app = express();
 const server = http.createServer(app);
 app.use(express.json());
 
-// Your HTTP endpoint
-
-
-// Create HTTP server with Express app
-
 
 // Attach Socket.IO to the HTTP server
 const io = new Server(server, {
@@ -35,17 +30,33 @@ io.on('connection', (socket) => {
   });
 });
 
-app.post('/notify-new-order', (req, res) => {
+app.post("/notify-new-order", (req, res) => {
   const { restaurantId, order } = req.body;
-  console.log('Received notification request for restaurant:', restaurantId);
-  
   if (!restaurantId || !order) {
-    console.log('Missing restaurantId or order');
-    return res.status(400).json({ error: 'restaurantId and order are required' });
+    return res
+      .status(400)
+      .json({ error: "restaurantId and order are required" });
   }
-  
-  console.log('Emitting new-order to room:', restaurantId);
-  io.to(restaurantId).emit('new-order', { order });
+
+  io.to(restaurantId).emit("new-order", { order });
+  res.json({ success: true });
+});
+
+app.post("/notify-order-accepted", (req, res) => {
+  const { restaurantId, orderId, order } = req.body;
+  console.log(
+    "Received order acceptance notification for restaurant:",
+    restaurantId
+  );
+
+  if (!restaurantId || !orderId) {
+    console.log("Missing restaurantId or orderId");
+    return res
+      .status(400)
+      .json({ error: "restaurantId and orderId are required" });
+  }
+
+  io.to(restaurantId).emit("order-accepted", { orderId, order });
   res.json({ success: true });
 });
 

@@ -8,11 +8,14 @@ import { FcOk } from "react-icons/fc";
 import CustomerDetailsModal from "./customer-details-modal";
 import TimeSelectModal from "./time-select-modal";
 import { ContactData } from "@/app/types";
-import { usePlaceOrder } from "@/app/queries/order";
+import { usePlaceOrder, useGetOrderById } from "@/app/queries/order";
 import { useCart } from "@/hooks/useCart";
 import DialogModal from "../shared/dialog-modal";
 import LoadingSpinner from "../shared/loading-spinner";
 import { useGetRestaurant } from "@/app/queries/restaurant";
+import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
+
 const sections = [
   {
     id: "contact",
@@ -66,12 +69,19 @@ function OrderDetails() {
     paymentMethod: "cash",
   };
   const [pickupData, setPickupData] = useState<PickupData>(initialpickupData);
+  const { push } = useRouter();
 
   const { mutate, isPending, data, isSuccess } = usePlaceOrder(() =>
     setPickupData(initialpickupData)
   );
+  const {
+    isPending: isAcceptedOrderPending,
+    data: acceptedOrderData,
+    refetch,
+  } = useGetOrderById(data?.data?._id);
   const { items, total } = useCart();
   const { data: restaurantData } = useGetRestaurant();
+
   // TODO: we need to add more options for order method and payment method
   function onSaveContactData(data: ContactData) {
     setPickupData((prev) => ({
@@ -113,6 +123,7 @@ function OrderDetails() {
       };
     });
   }
+
   function onPlaceOrder() {
     const restaurantId = restaurantData?.data?._id;
     const payload = {
@@ -205,8 +216,32 @@ function OrderDetails() {
       </button>
       {isSuccess && (
         <DialogModal title="Order Confirmation">
-          <p>{data?.message}</p>
-          <p>selectedTime : {data?.data.selectedTime}</p>
+          {isAcceptedOrderPending || acceptedOrderData?.state === "pending" ? (
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <p className="text-gray-600">Your order is being processed.</p>
+              <LoadingSpinner />
+            </div>
+          ) : (
+            <div>
+              <p className="font-semibold text-green-600">
+                Your order is confirmed!
+              </p>
+              <p>
+                Estimated ready time:{" "}
+                <span className="font-bold">
+                  {acceptedOrderData.estimatedTime}
+                </span>
+              </p>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+                onClick={() => {
+                  push("customer");
+                }}
+              >
+                ok
+              </button>
+            </div>
+          )}
         </DialogModal>
       )}
     </div>

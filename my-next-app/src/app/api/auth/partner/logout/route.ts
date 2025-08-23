@@ -10,7 +10,6 @@ export async function POST() {
 
         // Clear the auth cookie
         response.cookies.delete('auth-token');
-        console.log('🍪 Auth cookie cleared');
 
         return response;
     } catch (error) {

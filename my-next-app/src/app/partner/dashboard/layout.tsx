@@ -53,24 +53,24 @@ export default function PartnerLayout({
 
   return (
     <NotificationProvider>
-    <div className="min-h-screen bg-gray-50">
-      {/* Notification List */}
-      <NotificationList />
-      {/* Header */}
-      <Header
-        restaurantName={restaurantName?.name as string}
-        partnerName={user?.partnerName}
-        email={user.email}
-      />
+      <div className="min-h-screen bg-gray-50">
+        {/* Notification List */}
+        {/* <NotificationList /> */}
+        {/* Header */}
+        <Header
+          restaurantName={restaurantName?.name as string}
+          partnerName={user?.partnerName}
+          email={user.email}
+        />
 
-      <div className="flex">
-        {/* Sidebar */}
-        <Sidebar restaurantName={restaurantName?.name} />
+        <div className="flex">
+          {/* Sidebar */}
+          <Sidebar restaurantName={restaurantName?.name} />
 
-        {/* Main content */}
-        <main className="flex-1 p-6">{children}</main>
+          {/* Main content */}
+          <main className="flex-1 p-6">{children}</main>
+        </div>
       </div>
-    </div>
     </NotificationProvider>
   );
 }
