@@ -78,9 +78,7 @@ export default function Login() {
     e.preventDefault();
     login(formData, {
       onSuccess: (data: any) => {
-        console.log("Login successful", data);
-
-        push("/partner/dashboard/overview") ;
+        push("/partner/dashboard/overview");
 
         setFormData(initialFormData);
       },

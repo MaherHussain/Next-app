@@ -17,7 +17,7 @@ interface OrderResponse {
 }
 interface AcceptOrderPayload {
     orderId: string
-    estimatedTime: string
+    estimatedTime: string | number
 }
 
 export async function placeOrder(payload: Payload): Promise<OrderResponse> {
@@ -30,4 +30,12 @@ export async function acceptOrder(payload: AcceptOrderPayload) {
     const response = await http.patch('order/accept', payload)
     return response.data
 
+}
+export async function getOrderById(id: string) {
+    const response = await http.get(`order/${id}`);
+    return response.data;
+}
+export async function getTodayOrders() {
+    const response = await http.get(`order/orders`);
+    return response.data;
 }

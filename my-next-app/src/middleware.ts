@@ -20,7 +20,6 @@ export async function middleware(request: NextRequest) {
             // Verify the token
             const secret = new TextEncoder().encode(process.env.JWT_SECRET!);
             await jwtVerify(token, secret);
-            console.log('✅ Token valid, allowing access');
 
             // Token is valid, allow access
             return NextResponse.next();

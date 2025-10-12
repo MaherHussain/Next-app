@@ -8,7 +8,6 @@ export interface IOrder extends Document {
     contactData: ContactData
     selectedTime: string
     estimatedTime: string
-    customerConfirmedTime: boolean
     orderMethod: string
     paymentMethod: string
     total: number
@@ -49,10 +48,9 @@ const orderSchema: Schema<IOrder> | null = new Schema({
     },
     selectedTime: { type: String },
     estimatedTime: { type: String },
-    customerConfirmedTime: { type: Boolean, default: false },
     paymentMethod: { type: String, enum: ["card", "cash", "paypal"], required: true, default: "cash" },
     orderMethod: { type: String, enum: ["delivery", "pickup"], required: true, default: "pickup" },
-    status: { type: String, enum: ['pending', "confirmed", "cancelled", "awaiting-admin", "awaiting-customer"], default: "pending" }
+    status: { type: String, enum: ['pending', "confirmed", "rejected", "new"], default: "new" }
 }, { timestamps: true })
 
 orderSchema.pre('validate', async function (next) {

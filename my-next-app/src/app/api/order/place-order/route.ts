@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
             paymentMethod,
             total,
             orderMethod,
-            status: 'awaiting-admin',
+            status: 'pending',
+            estimatedTime: "", // default value
             restaurantId // <-- save restaurantId
         })
         await newOrder.save()

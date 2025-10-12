@@ -1,6 +1,8 @@
 "use client";
 import { useUser } from "@/app/utils/providers/UserContext";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
+import OrderNotificationList from "./components/order-notification-list";
+import AcceptedOrdersList from "./components/accepted-orders-list";
 /* import UserProfile from "@/app/components/shared/UserProfile";
 import RestaurantInfo from "../components/restaurant-info */
 
@@ -49,13 +51,31 @@ export default function PartnerDashboard() {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Overview</h1>
-        <p className="text-gray-600 mt-1">
-          Welcome back, {user.partnerName}! Here's what's happening with your
-          restaurant.
-        </p>
+      <div className="flex flex-row space-y-2 justify-between">
+        <h1 className="text-3xl font-bold text-gray-900">
+          Welcome {user.partnerName}
+        </h1>
+        <div className="flex items-center space-x-4">
+          <p className="text-gray-600 mt-1">
+            {new Date().toLocaleDateString("en-GB")}
+          </p>
+         
+        </div>
+      </div>
+      <div className="flex flex-row space-x-4 w-full h-[calc(100vh-100px)]">
+        <div className="p-4 rounded-md  border border-black-200 h-full flex-1">
+          <h5 className="bg-yellow-100 p-2 text-lg font-bold text-gray-800">
+            Incoming
+          </h5>
+          <OrderNotificationList />
+        </div>
+        <div className="p-4 rounded-md border border-black-200 h-full flex-1">
+          <h5 className="bg-green-100 p-2 text-lg font-bold text-gray-800">
+            Accepted
+          </h5>
+          <AcceptedOrdersList />
+        </div>
       </div>
     </div>
   );
-}
+} 
