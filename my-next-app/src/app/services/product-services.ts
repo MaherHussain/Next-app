@@ -23,3 +23,8 @@ export async function addProduct(product: { name: string; price: number }): Prom
     const response = await http.post<Product>('/products', product)
     return response.data
 }
+export async function deleteProduct(id: string): Promise<{ success: boolean; message: string }> {
+
+    const response = await http.delete<{ success: boolean; message: string }>('/products', { data: { id } })
+    return response.data
+}

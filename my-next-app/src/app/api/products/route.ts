@@ -53,3 +53,39 @@ export async function POST(req: NextRequest) {
     }
 
 }
+
+export async function DELETE(req: NextRequest) {
+    await dbConnect();
+    try {
+        const { id } = await req.json();
+        if (!id) {
+            return NextResponse.json({
+                success: false,
+                message: 'Product ID is required'
+            }, { status: 400 });
+        }
+
+        const deletedProduct = await Product.findByIdAndDelete(id);
+        if (!deletedProduct) {
+            return NextResponse.json({
+                success: false,
+                message: 'Product not found'
+            }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'Product deleted successfully'
+        }, { status: 200 });
+    } catch (error) {
+        console.error('[DELETE_PRODUCT_ERROR]', error);
+        return NextResponse.json(
+            {
+                message: 'Failed to delete product',
+                error: error instanceof Error ? error.message : 'Unknown error',
+            },
+            { status: 500 }
+        );
+    }
+
+}
