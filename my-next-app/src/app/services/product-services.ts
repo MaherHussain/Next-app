@@ -18,3 +18,8 @@ export async function getProducts(): Promise<Response> {
     const response = await http.get<Response>('/products')
     return response.data
 }
+export async function addProduct(product: { name: string; price: number }): Promise<Product> {
+
+    const response = await http.post<Product>('/products', product)
+    return response.data
+}
