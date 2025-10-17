@@ -3,7 +3,7 @@ import { useUser } from "@/app/utils/providers/UserContext";
 import { useState } from "react";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import { IoIosAdd } from "react-icons/io";
-import { ProductAddModal, ProductList } from "../products/components/";
+import { ProductModal, ProductList } from "../products/components/";
 
 export default function PartnerProducts() {
   const { user, isLoading: userLoading, isError: userError } = useUser();
@@ -74,7 +74,7 @@ export default function PartnerProducts() {
         <ProductList />
       </div>
       {isAddModalOpen && (
-        <ProductAddModal
+        <ProductModal
           isOpen={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
         />

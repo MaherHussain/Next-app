@@ -28,3 +28,9 @@ export async function deleteProduct(id: string): Promise<{ success: boolean; mes
     const response = await http.delete<{ success: boolean; message: string }>('/products', { data: { id } })
     return response.data
 }
+
+export async function editProduct(product: { id: string, name?: string; price?: number }): Promise<Product> {
+
+    const response = await http.put<Product>(`/products/${product.id}`, product)
+    return response.data
+}

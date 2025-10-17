@@ -5,7 +5,7 @@ import { PriceFormatter } from "@/app/utils/helpers/helpers";
 import { LiaPenSolid } from "react-icons/lia";
 import { MdDelete } from "react-icons/md";
 import { useDeleteProduct } from "@/app/queries/products";
-import { ProductDeleteDialog } from "./";
+import { ProductModal, ProductDeleteDialog } from "./";
 
 interface Product {
   _id: string;
@@ -19,6 +19,10 @@ const ProductList: React.FC = () => {
   const { data, isLoading, error } = useGetProducts();
   const [page, setPage] = useState(1);
   const { mutate: deleteMutate } = useDeleteProduct();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [productToEdit, setProductToEdit] = useState<Product | undefined>(
+    undefined
+  );
 
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProductToDelete, setSelectedProductToDelete] =
@@ -70,8 +74,11 @@ const ProductList: React.FC = () => {
               <td className="py-2 px-4">{PriceFormatter(product.price)}</td>
               <td className="py-2 px-4 space-x-2">
                 <button
-                  disabled
-                  className="bg-blue-200 text-blue-700 px-3 py-1 rounded cursor-not-allowed"
+                  onClick={() => {
+                    setIsEditModalOpen(true);
+                    setProductToEdit(product);
+                  }}
+                  className="bg-blue-200 text-blue-700 px-3 py-1 rounded "
                 >
                   <LiaPenSolid />
                 </button>
@@ -80,7 +87,7 @@ const ProductList: React.FC = () => {
                     setIsDeleteDialogOpen(true);
                     setSelectedProductToDelete(product);
                   }}
-                  className="bg-red-200 text-red-700 px-3 py-1 rounded cursor-not-allowed"
+                  className="bg-red-200 text-red-700 px-3 py-1 rounded"
                 >
                   <MdDelete />
                 </button>
@@ -118,6 +125,17 @@ const ProductList: React.FC = () => {
               deleteMutate(selectedProductToDelete._id);
             }
             setIsDeleteDialogOpen(false);
+          }}
+        />
+      )}
+      {isEditModalOpen && (
+        <ProductModal
+          isOpen={isEditModalOpen}
+          isEditAction={true}
+          productToEdit={productToEdit}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setProductToEdit(undefined);
           }}
         />
       )}
