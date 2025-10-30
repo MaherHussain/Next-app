@@ -5,11 +5,31 @@ import Product from "@/lib/models/Product";
 export async function GET() {
     await dbConnect();
     try {
-        const products = await Product.find();
-        return NextResponse.json({ succuss: true, data: products }, { status: 200 });
+        // `GET` may be called with a Request argument by Next.js — read it from arguments[0]
+        const req = arguments[0] as NextRequest | undefined;
+        const url = req ? new URL(req.url) : undefined;
+
+        const pageParam = url?.searchParams.get('page') ?? '1';
+        const limitParam = url?.searchParams.get('limit') ?? '10';
+
+        const page = Math.max(1, parseInt(pageParam, 10) || 1);
+        const limit = Math.max(1, Math.min(100, parseInt(limitParam, 10) || 10)); // cap limit to 100
+        const skip = (page - 1) * limit;
+
+        const [products, total] = await Promise.all([
+            Product.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
+            Product.countDocuments()
+        ]);
+
+        const totalPages = Math.max(1, Math.ceil(total / limit));
+
+        return NextResponse.json({
+            success: true,
+            data: products,
+            meta: { total, page, limit, totalPages }
+        }, { status: 200 });
     } catch (error) {
         console.error('[GET_PRODUCTS_ERROR]', error);
-
         return NextResponse.json(
             { message: 'Failed to fetch products', error: error instanceof Error ? error.message : 'Unknown error' },
             { status: 500 }

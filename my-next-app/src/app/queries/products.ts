@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addProduct, getProducts, deleteProduct, editProduct } from '../services/product-services'
+import { addProduct, getProducts, deleteProduct, editProduct, searchProducts } from '../services/product-services'
 
-export function useGetProducts() {
+export function useGetProducts({ page, limit }: { page?: number, limit?: number }) {
     return useQuery({
-        queryKey: ['products'],
-        queryFn: getProducts,
+        queryKey: ['products', { page, limit }],
+        queryFn: () => getProducts({ page, limit }),
         retry: 3
     })
 }
@@ -47,5 +47,14 @@ export function useEditProduct() {
             const errorMessage = err?.response?.data?.message || err?.message || "An error occurred";
             console.log(errorMessage)
         }
+    })
+}
+
+export function useSearchProducts({ query, page, limit }: { query: string, page?: number, limit?: number }) {
+    return useQuery({
+        queryKey: ['products', 'search', { query, page, limit }],
+        queryFn: () => searchProducts({ query, page, limit }),
+        enabled: query.length > 0,
+        retry: 3
     })
 }

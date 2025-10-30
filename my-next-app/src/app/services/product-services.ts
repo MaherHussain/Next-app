@@ -11,11 +11,17 @@ interface Product {
 interface Response {
     success: boolean,
     data: Product[]
+    meta: {
+        total: number,
+        page: number,
+        limit: number,
+        totalPages: number
+    }
 }
 
-export async function getProducts(): Promise<Response> {
+export async function getProducts({ page, limit }: { page?: number, limit?: number }): Promise<Response> {
 
-    const response = await http.get<Response>('/products')
+    const response = await http.get<Response>('/products', { params: { page, limit } })
     return response.data
 }
 export async function addProduct(product: { name: string; price: number }): Promise<Product> {
@@ -33,4 +39,8 @@ export async function editProduct(product: { id: string, name?: string; price?: 
 
     const response = await http.put<Product>(`/products/${product.id}`, product)
     return response.data
+}
+export async function searchProducts({ query, page, limit }: { query: string, page?: number, limit?: number }): Promise<Response> {
+    const response = await http.get<Response>(`/products/search`, { params: { q: query, page, limit } });
+    return response.data;
 }
