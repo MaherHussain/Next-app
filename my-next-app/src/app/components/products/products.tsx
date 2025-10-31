@@ -8,7 +8,7 @@ export interface Product {
   price: number;
 }
 export default function Products() {
-  const { data, isLoading } = useGetProducts();
+  const { data, isLoading } = useGetProducts({});
   const productsArr = data?.data.map((product) => {
     return {
       id: product._id,
