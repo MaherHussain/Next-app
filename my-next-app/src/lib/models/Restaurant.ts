@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+// this model called restaurant is to manage the data of shop/store
+// each partner could have one or more restaurants
 interface IRestaurant extends Document {
     name: string,
     address: string,

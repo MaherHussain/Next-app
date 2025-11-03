@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAddProduct, useEditProduct } from "../../../../queries/products";
+import { useUser } from "@/app/utils/providers/UserContext";
 
 interface ProductAddModalProps {
   isOpen: boolean;
@@ -18,8 +19,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
   isEditAction = false,
   productToEdit,
 }) => {
-  const [name, setName] = useState("");
-  const [price, setPrice] = useState<number | "">("");
+  
   const [productFormData, setProductFormData] = useState<{
     name: string;
     price: number | "";
@@ -47,6 +47,11 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
     }));
   };
 
+  const { user } = useUser();
+  const restaurantId = typeof user?.restaurantId === 'string' 
+  ? user.restaurantId 
+  : user?.restaurantId?._id ?? "";
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!productFormData.name || productFormData.price === "") return;
@@ -55,6 +60,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
       addProduct({
         name: productFormData.name,
         price: Number(productFormData.price),
+        restaurantId
       });
     }
     // Handle edit case
@@ -67,7 +73,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
         },
       });
     }
-    setProductFormData({ name: "", price: "" });
+    setProductFormData({ name: "", price: "",});
     onClose();
   };
 

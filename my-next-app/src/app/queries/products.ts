@@ -1,17 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addProduct, getProducts, deleteProduct, editProduct, searchProducts } from '../services/product-services'
 
-export function useGetProducts({ page, limit }: { page?: number, limit?: number }) {
+export function useGetProducts({ page, limit, restaurantId }: { page?: number, limit?: number, restaurantId: string }) {
     return useQuery({
-        queryKey: ['products', { page, limit }],
-        queryFn: () => getProducts({ page, limit }),
-        retry: 3
+        queryKey: ['products', { page, limit, restaurantId }],
+        queryFn: () => getProducts({ page, limit, restaurantId }),
+        retry: 3,
+        enabled: !!restaurantId,
     })
 }
 export function useAddProduct() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: addProduct,
+        mutationFn: ({ name, price, restaurantId }: { name: string, price: number, restaurantId: string }) => addProduct({ name, price, restaurantId }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
@@ -50,11 +51,11 @@ export function useEditProduct() {
     })
 }
 
-export function useSearchProducts({ query, page, limit }: { query: string, page?: number, limit?: number }) {
+export function useSearchProducts({ query, page, limit, restaurantId }: { query: string, page?: number, limit?: number, restaurantId: string }) {
     return useQuery({
-        queryKey: ['products', 'search', { query, page, limit }],
-        queryFn: () => searchProducts({ query, page, limit }),
-        enabled: query.length > 0,
+        queryKey: ['products', 'search', { query, page, limit, restaurantId }],
+        queryFn: () => searchProducts({ query, page, limit, restaurantId }),
+        enabled: query.length > 0 && !!restaurantId,
         retry: 3
     })
 }
