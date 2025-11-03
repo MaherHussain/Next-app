@@ -19,12 +19,12 @@ interface Response {
     }
 }
 
-export async function getProducts({ page, limit }: { page?: number, limit?: number }): Promise<Response> {
+export async function getProducts({ page, limit, restaurantId }: { page?: number, limit?: number, restaurantId: string }): Promise<Response> {
 
-    const response = await http.get<Response>('/products', { params: { page, limit } })
+    const response = await http.get<Response>('/products', { params: { page, limit, restaurantId } })
     return response.data
 }
-export async function addProduct(product: { name: string; price: number }): Promise<Product> {
+export async function addProduct(product: { name: string; price: number; restaurantId: string }): Promise<Product> {
 
     const response = await http.post<Product>('/products', product)
     return response.data
@@ -40,7 +40,7 @@ export async function editProduct(product: { id: string, name?: string; price?: 
     const response = await http.put<Product>(`/products/${product.id}`, product)
     return response.data
 }
-export async function searchProducts({ query, page, limit }: { query: string, page?: number, limit?: number }): Promise<Response> {
-    const response = await http.get<Response>(`/products/search`, { params: { q: query, page, limit } });
+export async function searchProducts({ query, page, limit, restaurantId }: { query: string, page?: number, limit?: number, restaurantId: string }): Promise<Response> {
+    const response = await http.get<Response>(`/products/search`, { params: { q: query, page, limit, restaurantId } });
     return response.data;
 }

@@ -12,6 +12,7 @@ import { MdDelete } from "react-icons/md";
 import { ProductModal, ProductDeleteDialog } from "./";
 import SearchInput from "@/app/components/shared/Searchinput";
 import useDebounce from "@/hooks/useDebounce";
+import { useUser } from "@/app/utils/providers/UserContext";
 interface Product {
   _id: string;
   name: string;
@@ -33,14 +34,29 @@ const ProductList: React.FC = () => {
   const [selectedProductToDelete, setSelectedProductToDelete] =
     useState<Product | null>(null);
 
+  const { user } = useUser();
+
+  
+  const restaurantId = typeof user?.restaurantId === 'string' 
+  ? user.restaurantId 
+  : user?.restaurantId?._id ?? "";
+
+
   const [searchTerm, setSearchTerm] = useState("");
+
   const debouncedSearchTerm = useDebounce(searchTerm, 500);
-  const { data, isLoading, error } = useGetProducts({ limit, page });
+
+  const { data, isLoading, error } = useGetProducts({
+    limit,
+    page,
+    restaurantId
+  });
+
   const {
     data: searchData,
     isLoading: searchLoading,
     error: searchError,
-  } = useSearchProducts({ query: debouncedSearchTerm, limit, page });
+  } = useSearchProducts({ query: debouncedSearchTerm, limit, page, restaurantId });
 
   // Raw products from main query
   const rawProducts: Product[] = data?.data || [];

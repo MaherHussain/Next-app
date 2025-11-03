@@ -1,14 +1,26 @@
 "use client";
+import { useContext } from "react";
 import { useGetProducts } from "../../queries/products";
 import LoadingSpinner from "../shared/loading-spinner";
 import ProductItem from "./product-item";
+import { useUser } from "@/app/utils/providers/UserContext";
 export interface Product {
   id: string;
   name: string;
   price: number;
 }
 export default function Products() {
-  const { data, isLoading } = useGetProducts({});
+
+  // TODO: Render Product list in the customer page based on restaurantId
+  // 1. hardcode the restaurand id in the landing page of customer 
+  // 2. Use useGetProducts to get the products
+  // 3. Render the products
+
+  const { user } = useUser();
+  const restaurantId = user?.restaurantId?._id ?? "";
+
+  const { data, isLoading } = useGetProducts({ restaurantId });
+
   const productsArr = data?.data.map((product) => {
     return {
       id: product._id,
