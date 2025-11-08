@@ -23,3 +23,13 @@ export interface PickupData {
     orderMethod: string | null;
     paymentMethod: string | null;
 };
+
+export interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    active?: boolean;
+    createdAt?: string;
+    updatedAt?: string;
+    restaurantId?: string;
+}
