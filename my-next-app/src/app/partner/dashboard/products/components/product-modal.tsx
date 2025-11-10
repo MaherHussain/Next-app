@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAddProduct, useEditProduct } from "../../../../queries/products";
 import { useUser } from "@/app/utils/providers/UserContext";
+import { FiInfo } from "react-icons/fi";
 
 interface ProductAddModalProps {
   isOpen: boolean;
@@ -9,6 +10,7 @@ interface ProductAddModalProps {
     _id: string;
     name: string;
     price: number;
+    active?: boolean;
   };
   onClose: () => void;
 }
@@ -23,7 +25,11 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
   const [productFormData, setProductFormData] = useState<{
     name: string;
     price: number | "";
-  }>({ name: "", price: "" });
+    active: boolean;
+  }>({ name: "", price: "", active: true });
+  
+  const [showInfoPopup, setShowInfoPopup] = useState(false);
+  
   const { mutate: addProduct } = useAddProduct();
 
   const { mutate: editProduct } = useEditProduct();
@@ -33,9 +39,10 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
       setProductFormData({
         name: productToEdit.name || "",
         price: productToEdit.price || "",
+        active: productToEdit.active ?? true,
       });
     } else {
-      setProductFormData({ name: "", price: "" });
+      setProductFormData({ name: "", price: "", active: true });
     }
   }, [isEditAction, productToEdit]);
 
@@ -44,6 +51,13 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
     setProductFormData((prev) => ({
       ...prev,
       [name]: name === "price" ? Number(value) || "" : value,
+    }));
+  };
+
+  const handleToggleActive = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setProductFormData((prev) => ({
+      ...prev,
+      active: e.target.checked,
     }));
   };
 
@@ -60,7 +74,8 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
       addProduct({
         name: productFormData.name,
         price: Number(productFormData.price),
-        restaurantId
+        restaurantId,
+        active: productFormData.active,
       });
     }
     // Handle edit case
@@ -70,10 +85,11 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
           id: productToEdit._id,
           name: productFormData.name,
           price: Number(productFormData.price),
+          active: productFormData.active,
         },
       });
     }
-    setProductFormData({ name: "", price: "",});
+    setProductFormData({ name: "", price: "", active: true });
     onClose();
   };
 
@@ -82,7 +98,9 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          {isEditAction ? "Edit Product" : "Add New Product"}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
@@ -107,6 +125,47 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
               min={0}
               step="0.01"
             />
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative inline-block">
+              <input
+                id="switch-component-green"
+                type="checkbox"
+                checked={productFormData.active}
+                onChange={handleToggleActive}
+                className="peer appearance-none w-11 h-5 bg-slate-100 rounded-full checked:bg-green-600 cursor-pointer transition-colors duration-300"
+              />
+              <label
+                htmlFor="switch-component-green"
+                className="absolute top-0 left-0 w-5 h-5 bg-white rounded-full border border-slate-300 shadow-sm transition-transform duration-300 peer-checked:translate-x-6 peer-checked:border-green-600 cursor-pointer"
+              ></label>
+            </div>
+            <div className="flex items-center gap-1 relative">
+              <label
+                htmlFor="switch-component-green"
+                className="text-sm font-medium cursor-pointer"
+              >
+                Product Active
+              </label>
+              <button
+                type="button"
+                className="relative"
+                onMouseEnter={() => setShowInfoPopup(true)}
+                onMouseLeave={() => setShowInfoPopup(false)}
+                onClick={() => setShowInfoPopup(!showInfoPopup)}
+              >
+                <FiInfo className="w-4 h-4 text-gray-500 hover:text-gray-700 cursor-pointer" />
+                {showInfoPopup && (
+                  <div className="absolute left-0 top-6 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg z-10">
+                    <p>
+                      When active, this product will be visible to customers and available for ordering. 
+                      When inactive, the product will be hidden from the menu but can be reactivated later.
+                    </p>
+                    <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
+                  </div>
+                )}
+              </button>
+            </div>
           </div>
           <div className="flex justify-end gap-2">
             <button

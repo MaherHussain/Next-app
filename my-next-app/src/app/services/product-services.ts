@@ -19,12 +19,12 @@ interface Response {
     }
 }
 
-export async function getProducts({ page, limit, restaurantId }: { page?: number, limit?: number, restaurantId: string }): Promise<Response> {
+export async function getProducts({ page, limit, restaurantId, activeOnly }: { page?: number, limit?: number, restaurantId: string, activeOnly: boolean }): Promise<Response> {
 
-    const response = await http.get<Response>('/products', { params: { page, limit, restaurantId } })
+    const response = await http.get<Response>('/products', { params: { page, limit, restaurantId, activeOnly } })
     return response.data
 }
-export async function addProduct(product: { name: string; price: number; restaurantId: string }): Promise<Product> {
+export async function addProduct(product: { name: string; price: number; restaurantId: string; active?: boolean }): Promise<Product> {
 
     const response = await http.post<Product>('/products', product)
     return response.data
@@ -35,12 +35,12 @@ export async function deleteProduct(id: string): Promise<{ success: boolean; mes
     return response.data
 }
 
-export async function editProduct(product: { id: string, name?: string; price?: number }): Promise<Product> {
+export async function editProduct(product: { id: string, name?: string; price?: number; active?: boolean }): Promise<Product> {
 
     const response = await http.put<Product>(`/products/${product.id}`, product)
     return response.data
 }
-export async function searchProducts({ query, page, limit, restaurantId }: { query: string, page?: number, limit?: number, restaurantId: string }): Promise<Response> {
-    const response = await http.get<Response>(`/products/search`, { params: { q: query, page, limit, restaurantId } });
+export async function searchProducts({ query, page, limit, restaurantId, activeOnly }: { query: string, page?: number, limit?: number, restaurantId: string, activeOnly: boolean }): Promise<Response> {
+    const response = await http.get<Response>(`/products/search`, { params: { q: query, page, limit, restaurantId, activeOnly } });
     return response.data;
 }
