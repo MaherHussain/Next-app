@@ -11,18 +11,26 @@ export async function GET() {
 
         const pageParam = url?.searchParams.get('page') ?? '1';
         const limitParam = url?.searchParams.get('limit') ?? '10';
-
+        const activeOnly = url?.searchParams.get('activeOnly') === 'true';
         const page = Math.max(1, parseInt(pageParam, 10) || 1);
         const limit = Math.max(1, Math.min(100, parseInt(limitParam, 10) || 10)); // cap limit to 100
         const skip = (page - 1) * limit;
         const restaurantId = url?.searchParams.get('restaurantId');
+
         if (!restaurantId) {
             return NextResponse.json({ success: false, message: 'restaurantId required' }, { status: 400 });
             
         }
+        /* filtering by restaurantID and active only products . 
+        because we use this endpoint for both customer and partner 
+        will add activeOnly params to customer product page to render products    */
+        const filter: any = { restaurantId }
+        if (activeOnly) {
+            filter.active = true
+        }
 
         const [products, total] = await Promise.all([
-            Product.find({ restaurantId }).sort({ createdAt: -1 }).skip(skip).limit(limit),
+            Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
             Product.countDocuments({ restaurantId })
         ]);
 
@@ -47,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     await dbConnect()
     try {
-        const { name, price, restaurantId } = await req.json()
+        const { name, price, restaurantId, active } = await req.json()
 
         if (!name || !price || !restaurantId) {
             return NextResponse.json({
@@ -57,7 +65,7 @@ export async function POST(req: NextRequest) {
 
         }
         const newProduct = new Product({
-            name, price, restaurantId
+            name, price, restaurantId, active: active !== undefined ? active : true
         })
 
         await newProduct.save()

@@ -49,14 +49,21 @@ const ProductList: React.FC = () => {
   const { data, isLoading, error } = useGetProducts({
     limit,
     page,
-    restaurantId
+    restaurantId,
+    activeOnly: false,
   });
 
   const {
     data: searchData,
     isLoading: searchLoading,
     error: searchError,
-  } = useSearchProducts({ query: debouncedSearchTerm, limit, page, restaurantId });
+  } = useSearchProducts({
+    query: debouncedSearchTerm,
+    limit,
+    page,
+    restaurantId,
+    activeOnly: false,
+  });
 
   // Raw products from main query
   const rawProducts: Product[] = data?.data || [];

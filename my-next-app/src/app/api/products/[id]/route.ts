@@ -5,7 +5,7 @@ import Product from "@/lib/models/Product";
 export async function PUT(req: NextRequest) {
     await dbConnect();
     try {
-        const { id, name, price } = await req.json();
+        const { id, name, price, active } = await req.json();
         if (!id || !name || !price) {
             return NextResponse.json({
                 success: false,
@@ -13,7 +13,12 @@ export async function PUT(req: NextRequest) {
             }, { status: 400 });
         }
 
-        const updatedProduct = await Product.findByIdAndUpdate(id, { name, price }, { new: true });
+        const updateData: { name: string; price: number; active?: boolean } = { name, price };
+        if (active !== undefined) {
+            updateData.active = active;
+        }
+
+        const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
         if (!updatedProduct) {
             return NextResponse.json({
                 success: false,

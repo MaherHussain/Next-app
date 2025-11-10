@@ -9,6 +9,8 @@ export async function GET(request: NextRequest) {
     const query = (rowQuery ?? "").trim();
     const page = Math.max(1, Number(searchParams.get("page")) || 1);
     const limit = Math.max(1, Number(searchParams.get("limit")) || 10);
+    const activeOnly = searchParams.get("activeOnly") === "true";
+
     const skip = (page - 1) * limit;
     const restaurantId = searchParams.get('restaurantId');
 
@@ -21,7 +23,14 @@ export async function GET(request: NextRequest) {
         let items;
         let total;
         const regex = new RegExp(query.trim(), "i");
-        const filter = { restaurantId, $or: [{ name: regex }] };
+        const filter: any = {
+            restaurantId,
+            $or: [{ name: regex }]
+        };
+
+        if (activeOnly) {
+            filter.active = true;
+        }
         [items, total] = await Promise.all([
             Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
             Product.countDocuments(filter)
