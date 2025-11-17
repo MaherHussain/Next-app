@@ -4,10 +4,12 @@ import { useState } from "react";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import { IoIosAdd } from "react-icons/io";
 import { ProductModal, ProductList } from "../products/components/";
-
+import { useRouter } from "next/navigation";
+import { FaArrowLeftLong } from "react-icons/fa6";
 export default function PartnerProducts() {
   const { user, isLoading: userLoading, isError: userError } = useUser();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const router = useRouter();
 
   // Loading state
   if (userLoading) {
@@ -48,15 +50,20 @@ export default function PartnerProducts() {
 
   return (
     <div className="space-y-6">
+      <button onClick={() => router.push("/partner/dashboard/ingredients")} className=" flex flex-row items-center gap-2 mb-4  text-gray-600 hover:text-gray-800 font-medium cursor-pointer">
+              <FaArrowLeftLong />
+              <span>Manage Ingredients</span>
+            </button>
       {/* Page Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Products</h1>
+
           <p className="text-gray-600 mt-1">
-            Manage your menu items and products for {user.restaurantId?.name}.
+            Manage your menu items and products.
           </p>
         </div>
-        <div className="">
+        <div className=" flex items-center space-x-4">
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="flex items-center justify-between space-x-2 text-center px-10 py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 "

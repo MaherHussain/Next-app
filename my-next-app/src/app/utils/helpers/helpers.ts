@@ -1,12 +1,8 @@
 export function PriceFormatter(price: number) {
-    if (price) {
-        return (price).toLocaleString("da-DK", {
-            style: "currency",
-            currency: "DKK",
-        })
-    }
-
-
+    return (price).toLocaleString("da-DK", {
+        style: "currency",
+        currency: "DKK",
+    })
 }
 export const getCartIdFromLocalStorage = () => {
     if (typeof window !== "undefined") {
