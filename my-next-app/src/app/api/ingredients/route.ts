@@ -54,3 +54,22 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to create ingredient' }, { status: 500 });
     }
 }
+
+
+export async function DELETE(req: NextRequest) {
+    await dbConnect();
+    try {
+        const { id } = await req.json();
+        if (!id) {
+            return NextResponse.json({ error: 'Ingredient ID is required' }, { status: 400 });
+        }
+        const deletedIngredient = await Ingredient.findByIdAndDelete(id);
+        if (!deletedIngredient) {
+            return NextResponse.json({ error: 'Ingredient not found' }, { status: 404 });
+        }
+        return NextResponse.json({ message: 'Ingredient deleted successfully' });
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to delete ingredient' }, { status: 500 });
+    }
+}
+

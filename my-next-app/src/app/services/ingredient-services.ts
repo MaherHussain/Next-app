@@ -28,3 +28,9 @@ export async function addIngredient(ingredient: { name: string, cost: number, re
     const response = await http.post<Ingredient>("/ingredients", ingredient);
     return response.data;
 }
+
+export async function deletedIngredient(id: string): Promise<{ success: boolean; message: string }> {
+
+    const response = await http.delete<{ success: boolean; message: string }>('/ingredients', { data: { id } })
+    return response.data
+}

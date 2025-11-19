@@ -4,11 +4,14 @@ import {useEffect, useState} from "react";
 import LoadingSpinner from '@/app/components/shared/loading-spinner';
 import SearchInput from '@/app/components/shared/Searchinput';
 import { PriceFormatter } from "@/app/utils/helpers/helpers";
-import { useGetIngredients } from "@/app/queries/ingredients";
+import {
+  useGetIngredients,
+  useDeleteIngredient,
+} from "@/app/queries/ingredients";
 import { useUser } from "@/app/utils/providers/UserContext";
 import { LiaPenSolid } from "react-icons/lia";
 import { MdDelete } from "react-icons/md";
-
+import { IngredientDeleteDialog } from "./";
 
 interface ingredient {
   _id: string;
@@ -17,14 +20,18 @@ interface ingredient {
   createdAt?: string;
 }
 
-
-
-function IngredientList({onTotalChange} : {onTotalChange?: (total: number) => void}) {
-
+function IngredientList({
+  onTotalChange,
+}: {
+  onTotalChange?: (total: number) => void;
+}) {
   const { user } = useUser();
 
   const [page, setPage] = useState(1);
   const limit = 10;
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedIngredientToDelete, setSelectedIngredientToDelete] =
+    useState<ingredient | null>(null);
 
   const restaurantId =
     typeof user?.restaurantId === "string"
@@ -40,12 +47,14 @@ function IngredientList({onTotalChange} : {onTotalChange?: (total: number) => vo
   const [searchTerm, setSearchTerm] = useState("");
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-  }
+  };
   useEffect(() => {
-    if(onTotalChange){
+    if (onTotalChange) {
       onTotalChange(totalIngredients);
     }
   }, [totalIngredients, onTotalChange]);
+
+  const { mutate: deleteMutate } = useDeleteIngredient();
 
   return (
     <div className="p-4 mt-4 bg-white max-h-screen overflow-y-auto rounded-lg shadow">
@@ -87,7 +96,13 @@ function IngredientList({onTotalChange} : {onTotalChange?: (total: number) => vo
                     <button className="bg-blue-200 text-blue-700 px-3 py-1 rounded ">
                       <LiaPenSolid />
                     </button>
-                    <button className="bg-red-200 text-red-700 px-3 py-1 rounded">
+                    <button
+                      onClick={() => {
+                        setSelectedIngredientToDelete(ingredient);
+                        setIsDeleteDialogOpen(true);
+                      }}
+                      className="bg-red-200 text-red-700 px-3 py-1 rounded"
+                    >
                       <MdDelete />
                     </button>
                   </td>
@@ -118,19 +133,18 @@ function IngredientList({onTotalChange} : {onTotalChange?: (total: number) => vo
         </div>
       )}
 
-      {/* {isDeleteDialogOpen && (
-        <ProductDeleteDialog
-          productName={selectedProductToDelete?.name}
-          isOpen={isDeleteDialogOpen}
+      {isDeleteDialogOpen && (
+        <IngredientDeleteDialog
+          ingredientName={selectedIngredientToDelete?.name}
           onCancel={() => setIsDeleteDialogOpen(false)}
           onProceed={() => {
-            if (selectedProductToDelete) {
-              deleteMutate(selectedProductToDelete._id);
+            if (selectedIngredientToDelete) {
+              deleteMutate(selectedIngredientToDelete._id);
             }
             setIsDeleteDialogOpen(false);
           }}
         />
-      )} */}
+      )}
       {/* {isEditModalOpen && (
         <ProductModal
           isOpen={isEditModalOpen}
