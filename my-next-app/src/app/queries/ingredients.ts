@@ -10,7 +10,7 @@ export function useGetIngredients({ restaurantId, page, limit }: { restaurantId:
     })
 }
 
-/* export function useAddIngredient() {
+export function useAddIngredient() {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: addIngredient,
@@ -23,4 +23,4 @@ export function useGetIngredients({ restaurantId, page, limit }: { restaurantId:
             console.log(errorMessage);
         },
     });
-} */
+}
