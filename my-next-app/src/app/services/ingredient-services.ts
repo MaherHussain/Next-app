@@ -34,3 +34,8 @@ export async function deletedIngredient(id: string): Promise<{ success: boolean;
     const response = await http.delete<{ success: boolean; message: string }>('/ingredients', { data: { id } })
     return response.data
 }
+
+export async function editIngredient(ingredient: { id: string, name: string, cost: number }): Promise<Ingredient> {
+    const response = await http.put<Ingredient>("/ingredients", ingredient);
+    return response.data;
+}

@@ -11,14 +11,14 @@ import {
 import { useUser } from "@/app/utils/providers/UserContext";
 import { LiaPenSolid } from "react-icons/lia";
 import { MdDelete } from "react-icons/md";
-import { IngredientDeleteDialog } from "./";
+import { IngredientDeleteDialog, IngredientModal } from "./";
 
 interface ingredient {
   _id: string;
   name: string;
   cost?: number | null;
   createdAt?: string;
-}
+} 
 
 function IngredientList({
   onTotalChange,
@@ -30,6 +30,11 @@ function IngredientList({
   const [page, setPage] = useState(1);
   const limit = 10;
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [ingredientToEdit, setIngredientToEdit] = useState<
+    ingredient | undefined
+  >(undefined);
+
   const [selectedIngredientToDelete, setSelectedIngredientToDelete] =
     useState<ingredient | null>(null);
 
@@ -37,6 +42,7 @@ function IngredientList({
     typeof user?.restaurantId === "string"
       ? user.restaurantId
       : user?.restaurantId?._id ?? "";
+
   const { data, error, isLoading } = useGetIngredients({
     restaurantId,
     page,
@@ -44,10 +50,12 @@ function IngredientList({
   });
   const totalIngredients = data?.meta.total || 0;
   const totalPages = data?.meta?.totalPages || 1;
-  const [searchTerm, setSearchTerm] = useState("");
+
+  /* const [searchTerm, setSearchTerm] = useState("");
   const handleSearch = (term: string) => {
     setSearchTerm(term);
-  };
+  }; */
+
   useEffect(() => {
     if (onTotalChange) {
       onTotalChange(totalIngredients);
@@ -58,7 +66,7 @@ function IngredientList({
 
   return (
     <div className="p-4 mt-4 bg-white max-h-screen overflow-y-auto rounded-lg shadow">
-      <SearchInput onSearch={handleSearch} />
+      {/* <SearchInput onSearch={handleSearch} /> */}
 
       {/* Loading state */}
       {isLoading ? (
@@ -93,7 +101,13 @@ function IngredientList({
                     {PriceFormatter(ingredient.cost ?? 0)}
                   </td>
                   <td className="py-2 px-4 space-x-2">
-                    <button className="bg-blue-200 text-blue-700 px-3 py-1 rounded ">
+                    <button
+                      onClick={() => {
+                        setIngredientToEdit(ingredient);
+                        setIsEditModalOpen(true);
+                      }}
+                      className="bg-blue-200 text-blue-700 px-3 py-1 rounded "
+                    >
                       <LiaPenSolid />
                     </button>
                     <button
@@ -145,17 +159,17 @@ function IngredientList({
           }}
         />
       )}
-      {/* {isEditModalOpen && (
-        <ProductModal
+      {isEditModalOpen && (
+        <IngredientModal
           isOpen={isEditModalOpen}
           isEditAction={true}
-          productToEdit={productToEdit}
+          ingredientToEdit={ingredientToEdit}
           onClose={() => {
             setIsEditModalOpen(false);
-            setProductToEdit(undefined);
+            setIngredientToEdit(undefined);
           }}
         />
-      )} */}
+      )}
     </div>
   );
 }
