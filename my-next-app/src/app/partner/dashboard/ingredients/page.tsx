@@ -13,7 +13,7 @@ export default function Page() {
 
   const router = useRouter();
   return (
-    <div>
+    <div className="p-6">
       <button
         onClick={() => router.push("/partner/dashboard/products")}
         className=" flex flex-row items-center gap-2 mb-4  text-gray-600 hover:text-gray-800 font-medium cursor-pointer"

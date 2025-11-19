@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addIngredient, getIngredients } from "../services/ingredient-services";
+import { addIngredient, deletedIngredient, getIngredients } from "../services/ingredient-services";
 
 export function useGetIngredients({ restaurantId, page, limit }: { restaurantId: string, page: number, limit: number }) {
     return useQuery({
@@ -20,7 +20,22 @@ export function useAddIngredient() {
         onError: (err: any) => {
             const errorMessage =
                 err?.response?.data?.message || err?.message || "An error occurred";
-            console.log(errorMessage);
+            return errorMessage
+        },
+    });
+}
+
+export function useDeleteIngredient() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: deletedIngredient,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["ingredients"] });
+        },
+        onError: (err: any) => {
+            const errorMessage =
+                err?.response?.data?.message || err?.message || "An error occurred";
+            return errorMessage
         },
     });
 }
