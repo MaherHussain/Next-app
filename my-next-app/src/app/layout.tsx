@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+// @ts-ignore: allow side-effect global CSS import for Next.js
 import "./globals.css";
 import ReactQueryProvider from "./utils/providers/ReactQueriesProviders";
 import { UserProvider } from "./utils/providers/UserContext";
-
+import { ToastContainer } from "react-toastify";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -33,6 +34,18 @@ export default function RootLayout({
         <ReactQueryProvider>
           <UserProvider>
             {children}
+            <ToastContainer
+              position="top-center"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="dark"
+            />
           </UserProvider>
         </ReactQueryProvider>
       </body>

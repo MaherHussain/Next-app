@@ -48,21 +48,20 @@ function IngredientList({onTotalChange} : {onTotalChange?: (total: number) => vo
   }, [totalIngredients, onTotalChange]);
 
   return (
-    <div className="p-4 bg-white max-h-screen overflow-y-auto ">
+    <div className="p-4 mt-4 bg-white max-h-screen overflow-y-auto rounded-lg shadow">
       <SearchInput onSearch={handleSearch} />
 
       {/* Loading state */}
-      {isLoading  ? (
+      {isLoading ? (
         <div className="flex flex-row justify-center mt-6">
           <LoadingSpinner size="large" />
         </div>
       ) : error ? (
         <div className="text-red-500 p-4">Error loading products.</div>
-      ) : !data  ? (
+      ) : !data ? (
         <div className="text-gray-500 p-4">
           No ingredients have been added yet, click add button to start.
         </div>
-      
       ) : (
         <div>
           <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
@@ -81,14 +80,14 @@ function IngredientList({onTotalChange} : {onTotalChange?: (total: number) => vo
               {data.data.map((ingredient: ingredient) => (
                 <tr key={ingredient._id} className="border-t">
                   <td className="py-2 px-4">{ingredient.name}</td>
-                  <td className="py-2 px-4">{PriceFormatter(ingredient.cost ?? 0)}</td>
+                  <td className="py-2 px-4">
+                    {PriceFormatter(ingredient.cost ?? 0)}
+                  </td>
                   <td className="py-2 px-4 space-x-2">
-                    <button className="bg-blue-200 text-blue-700 px-3 py-1 rounded "
-                    >
+                    <button className="bg-blue-200 text-blue-700 px-3 py-1 rounded ">
                       <LiaPenSolid />
                     </button>
-                    <button className="bg-red-200 text-red-700 px-3 py-1 rounded"
-                    >
+                    <button className="bg-red-200 text-red-700 px-3 py-1 rounded">
                       <MdDelete />
                     </button>
                   </td>

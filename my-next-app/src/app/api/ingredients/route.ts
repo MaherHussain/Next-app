@@ -34,3 +34,23 @@ export async function GET () {
         return NextResponse.json({ error: 'Failed to fetch ingredients' }, { status: 500 });
     }
 }
+
+export async function POST(req: NextRequest) {
+    await dbConnect();
+    try {
+        const { name, cost, restaurantId } = await req.json();
+
+        if (!name || !restaurantId) {
+            return NextResponse.json({ error: 'Ingredient name and restaurant ID are required' }, { status: 400 });
+        }
+
+        const newIngredient = new Ingredient({ name, cost, restaurantId });
+        await newIngredient.save();
+        return NextResponse.json({
+            success: true,
+            data: newIngredient
+        }, { status: 201 })
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to create ingredient' }, { status: 500 });
+    }
+}
