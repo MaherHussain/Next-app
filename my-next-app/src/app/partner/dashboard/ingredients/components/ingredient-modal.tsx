@@ -1,37 +1,70 @@
 import {act, useEffect, useState} from 'react'
-import { useAddIngredient } from '@/app/queries/ingredients';
-import { useUser } from '@/app/utils/providers/UserContext';
-import LoadingSpinner from '@/app/components/shared/loading-spinner';
-import {showToast} from '@/app/utils/toast';
+import { useAddIngredient, useEditIngredient } from "@/app/queries/ingredients";
+import { useUser } from "@/app/utils/providers/UserContext";
+import LoadingSpinner from "@/app/components/shared/loading-spinner";
+import { showToast } from "@/app/utils/toast";
 
 interface IngredientModalProps {
   isOpen: boolean;
   onClose: () => void;
+  isEditAction?: boolean;
+  ingredientToEdit?: {
+    _id: string;
+    name: string;
+    cost?: number | null;
+  };
 }
-    
-function IngredientModal({ onClose }: IngredientModalProps) {
-    const [activeAction, setActiveAction] = useState<'addAnother' | 'close' | null>(null);
 
-    const [formData, setFormData] = useState<{
+function IngredientModal({
+  onClose,
+  ingredientToEdit,
+  isEditAction = false,
+}: IngredientModalProps) {
+  const [activeAction, setActiveAction] = useState<
+    "addAnother" | "close" | null
+  >(null);
+
+  const [formData, setFormData] = useState<{
     name: string;
     cost: number | undefined;
   }>({ name: "", cost: undefined });
-  const { user } = useUser();
-  const restaurantId = typeof user?.restaurantId === 'string' 
-  ? user.restaurantId 
-  : user?.restaurantId?._id ?? "";
 
-  const { mutate: addIngredient, isPending: isAdding , isError , error} = useAddIngredient();
+  const { user } = useUser();
+
+  const restaurantId =
+    typeof user?.restaurantId === "string"
+      ? user.restaurantId
+      : user?.restaurantId?._id ?? "";
+
+  const {
+    mutate: addIngredient,
+    isPending: isAdding,
+    isError,
+    error,
+  } = useAddIngredient();
+
+  const { mutate: editIngredient } = useEditIngredient();
+
   const resetAfterMutation = () => setActiveAction(null);
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
-    
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   }
+  useEffect(() => {
+    if (isEditAction && ingredientToEdit) {
+      setFormData({
+        name: ingredientToEdit.name || "",
+        cost: ingredientToEdit.cost || 0,
+      });
+    } else {
+      setFormData({ name: "", cost: 0 });
+    }
+  }, [isEditAction, ingredientToEdit]);
 
   const isFormValid = formData.name.trim() !== "";
 
@@ -52,38 +85,59 @@ function IngredientModal({ onClose }: IngredientModalProps) {
         onSettled: resetAfterMutation,
       }
     );
-    
   }
 
-function handleSaveAndClose(e: React.FormEvent) {
+  function handleSaveAndClose(e: React.FormEvent) {
     e.preventDefault();
     setActiveAction("close");
-    addIngredient(
-      {
-        name: formData.name,
-        cost: formData.cost || 0,
-        restaurantId
-      },
-      {
-        onSuccess: () => {
+    if (!isFormValid) return;
+    if (!ingredientToEdit) {
+      addIngredient(
+        {
+          name: formData.name,
+          cost: formData.cost || 0,
+          restaurantId,
+        },
+        {
+          onSuccess: () => {
             showToast.success(`${formData.name} added successfully`);
             onClose();
+          },
+          onSettled: resetAfterMutation,
+        }
+      );
+    } else {
+      editIngredient(
+        {
+          id: ingredientToEdit._id,
+          name: formData.name,
+          cost: formData.cost || 0,
         },
-        onSettled: resetAfterMutation,
-      }
-    );
-
+        {
+          onSuccess: () => {
+            showToast.success(`The ingredient updated successfully`);
+            onClose();
+          },
+          onSettled: resetAfterMutation,
+        }
+      );
+    }
   }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
         <div className="flex flex-col justify-between  mb-4">
-          <span className="text-xl w-full text-right hover:text-orange-500 cursor-pointer" onClick={onClose}>x</span>
+          <span
+            className="text-xl w-full text-right hover:text-orange-500 cursor-pointer"
+            onClick={onClose}
+          >
+            x
+          </span>
           <h2 className="text-xl font-bold mb-4">Ingredient Modal</h2>
         </div>
 
-        <form  className="space-y-2">
+        <form className="space-y-2">
           {isError && <p className="text-red-500">{error}</p>}
           <div>
             <label className="block text-gray-700">Ingredient Name</label>
@@ -110,19 +164,23 @@ function handleSaveAndClose(e: React.FormEvent) {
             />
           </div>
           <div className="flex flex-col gap-2">
-            <button
-              type="button"
-              onClick={handleSaveAndAddAnother}
-              className={`px-4 py-2 bg-blue-600 text-white rounded ${
-                isAdding || !isFormValid ? "opacity-60 cursor-not-allowed" : ""
-              }`}
-              disabled={isAdding || !isFormValid}
-            >
-              {isAdding && activeAction === "addAnother" && (
-                <LoadingSpinner size="small" />
-              )}
-              Save & Add another
-            </button>
+            {!ingredientToEdit && (
+              <button
+                type="button"
+                onClick={handleSaveAndAddAnother}
+                className={`px-4 py-2 bg-blue-600 text-white rounded ${
+                  isAdding || !isFormValid
+                    ? "opacity-60 cursor-not-allowed"
+                    : ""
+                }`}
+              >
+                {isAdding && activeAction === "addAnother" && (
+                  <LoadingSpinner size="small" />
+                )}
+                Save & Add Another
+              </button>
+            )}
+
             <button
               type="button"
               className={`px-4 py-2 bg-blue-600 text-white rounded ${

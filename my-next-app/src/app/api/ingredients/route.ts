@@ -72,4 +72,26 @@ export async function DELETE(req: NextRequest) {
         return NextResponse.json({ error: 'Failed to delete ingredient' }, { status: 500 });
     }
 }
+export async function PUT(req: NextRequest) {
+    await dbConnect();
+    try {
+        const { id, name, cost } = await req.json();
+        if (!id) {
 
+            return NextResponse.json({ error: 'Ingredient ID is required' }, { status: 400 });
+        }
+        const updatedIngredient = await Ingredient.findByIdAndUpdate(
+            id,
+            { name, cost },
+            { new: true }
+        );
+
+        if (!updatedIngredient) {
+            return NextResponse.json({ error: 'Failed to update ingredient' }, { status: 404 });
+        }
+
+        return NextResponse.json({ success: true, data: updatedIngredient });
+    } catch (error) {
+        return NextResponse.json({ error: 'Failed to update ingredient' }, { status: 500 });
+    }
+}
