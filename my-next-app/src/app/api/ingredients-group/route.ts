@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
 import IngredientGroup from '@/lib/models/IngredientsGroup';
-import { success } from 'zod/v4';
 
 
 export async function GET() {
@@ -11,9 +10,9 @@ export async function GET() {
         const url = req ? new URL(req.url) : undefined;
 
         const restaurantId = url?.searchParams.get("restaurantId");
-        const ingredientsGroup = await IngredientGroup.find({ restaurantId });
+        const ingredientsGroup = await IngredientGroup.find({ restaurantId }).populate({ path: "ingredients", select: "name cost" });
 
-        return NextResponse.json(ingredientsGroup, { status: 200 });
+        return NextResponse.json({ success: true, data: ingredientsGroup }, { status: 200 });
     } catch (error) {
         return NextResponse.json({ error: 'Failed to fetch ingredients' }, { status: 500 });
     }

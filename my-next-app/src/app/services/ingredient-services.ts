@@ -24,6 +24,11 @@ export async function getIngredients({ restaurantId, page, limit }: { restaurant
     return response.data
 }
 
+export async function getAllIngredients({ restaurantId }: { restaurantId: string }): Promise<Response> {
+
+    const response = await http.get<Response>(`/ingredients?restaurantId=${restaurantId}&all="true"`)
+    return response.data
+}
 export async function addIngredient(ingredient: { name: string, cost: number, restaurantId: string }): Promise<Ingredient> {
     const response = await http.post<Ingredient>("/ingredients", ingredient);
     return response.data;

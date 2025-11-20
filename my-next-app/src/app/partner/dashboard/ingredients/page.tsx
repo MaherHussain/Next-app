@@ -14,13 +14,23 @@ export default function Page() {
   const router = useRouter();
   return (
     <div className="p-6">
-      <button
-        onClick={() => router.push("/partner/dashboard/products")}
-        className=" flex flex-row items-center gap-2 mb-4  text-gray-600 hover:text-gray-800 font-medium cursor-pointer"
-      >
-        <FaArrowLeftLong />
-        <span>back to products</span>
-      </button>
+      <div className="flex flex-row justify-between">
+        <button
+          onClick={() => router.push("/partner/dashboard/products")}
+          className=" flex flex-row items-center gap-2 mb-4  text-gray-600 hover:text-gray-800 font-medium cursor-pointer"
+        >
+          <FaArrowLeftLong />
+          <span>back to products</span>
+        </button>
+        <button
+          onClick={() => router.push("/partner/dashboard/ingredients-group")}
+          className=" flex flex-row items-center gap-2 mb-4  text-gray-600 hover:text-gray-800 font-medium cursor-pointer"
+        >
+          <FaArrowLeftLong />
+          <span>manage ingredients groups</span>
+        </button>
+      </div>
+
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">
           Ingredients ({listCount})
