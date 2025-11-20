@@ -74,7 +74,7 @@ function IngredientList({
           <LoadingSpinner size="large" />
         </div>
       ) : error ? (
-        <div className="text-red-500 p-4">Error loading products.</div>
+        <div className="text-red-500 p-4">Error loading ingredients.</div>
       ) : !data ? (
         <div className="text-gray-500 p-4">
           No ingredients have been added yet, click add button to start.
