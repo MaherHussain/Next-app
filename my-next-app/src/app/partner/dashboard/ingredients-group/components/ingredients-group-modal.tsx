@@ -7,6 +7,7 @@ import {
   useEditIngredientGroup,
 } from "@/app/queries/ingredients-groups";
 import { showToast } from "@/app/utils/toast";
+import LoadingSpinner from "@/app/components/shared/loading-spinner";
 
 interface IngredientsGroupModalProps {
   isOpen: boolean;
@@ -66,8 +67,10 @@ function IngredientsGroupModal({
     });
   }
 
-  const { mutate: addIngredientGroup } = useAddIngredientGroup();
-  const { mutate: editIngredientGroup } = useEditIngredientGroup();
+  const { mutate: addIngredientGroup, isPending: isSaving } =
+    useAddIngredientGroup();
+  const { mutate: editIngredientGroup, isPending: isEditing } =
+    useEditIngredientGroup();
 
   function onSave() {
     if (isEditingAction && ingredientsGroupToEdit) {
@@ -90,6 +93,7 @@ function IngredientsGroupModal({
         {
           onSuccess: () => {
             showToast.success(`${formData.name} added successfully`);
+            setFormData({ name: "", ingredients: [] });
             onClose();
           },
         }
@@ -100,6 +104,11 @@ function IngredientsGroupModal({
     restaurantId,
   });
   const ingredients = ingredientsData?.data || [];
+  const isDisabled =
+    formData.name.trim() === "" ||
+    formData.ingredients.length === 0 ||
+    isSaving ||
+    isEditing;
 
   if (!isOpen) return null;
 
@@ -162,9 +171,15 @@ function IngredientsGroupModal({
           <div className="flex justify-end mt-4">
             <button
               type="button"
-              className="bg-orange-500 text-white px-4 py-2 rounded-lg"
+              className={`bg-orange-500 text-white px-4 py-2 rounded-lg ${
+                isDisabled ? "opacity-50 cursor-not-allowed" : ""
+              }`}
               onClick={onSave}
+              disabled={isDisabled}
             >
+              <span>
+                {isSaving || isEditing ? <LoadingSpinner size="small" /> : null}
+              </span>
               Save
             </button>
           </div>

@@ -1,11 +1,15 @@
 'use client'
 import { useState } from "react";
-import { useGetIngredientsGroups } from "@/app/queries/ingredients-groups";
+import {
+  useGetIngredientsGroups,
+  useDeleteIngredientGroup,
+} from "@/app/queries/ingredients-groups";
 import { useUser } from "@/app/utils/providers/UserContext";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import { MdDelete } from "react-icons/md";
 import { LiaPenSolid } from "react-icons/lia";
-import { IngredientsGroupModal } from ".";
+import { IngredientsGroupModal, IngredientsGroupDeleteDialog } from ".";
+import { showToast } from "@/app/utils/toast";
 
 interface IngredientGroup {
   _id: string;
@@ -22,11 +26,27 @@ function IngredientsGroupList() {
       ? user.restaurantId
       : user?.restaurantId?._id ?? "";
   const { data, isLoading, error } = useGetIngredientsGroups({ restaurantId });
+  const { mutate: deleteIngredientGroup } = useDeleteIngredientGroup();
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [ingredientsGroupToEdit, setIngredientsGroupToEdit] =
     useState<IngredientGroup | null>(null);
 
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [ingredientsGroupToDelete, setIngredientsGroupToDelete] =
+    useState<IngredientGroup | null>(null);
+
+  function onProceedDelete() {
+    if (ingredientsGroupToDelete) {
+      deleteIngredientGroup(ingredientsGroupToDelete._id, {
+        onSuccess: () => {
+          setIngredientsGroupToDelete(null);
+          setIsDeleteDialogOpen(false);
+          showToast.warning("Ingredient group deleted successfully");
+        },
+      });
+    }
+  }
   return (
     <div className="p-4 mt-4 bg-white max-h-screen overflow-y-auto rounded-lg shadow">
       {isLoading ? (
@@ -79,8 +99,8 @@ function IngredientsGroupList() {
                     </button>
                     <button
                       onClick={() => {
-                        /* setSelectedIngredientToDelete(group);
-                                    setIsDeleteDialogOpen(true); */
+                        setIngredientsGroupToDelete(group);
+                        setIsDeleteDialogOpen(true);
                       }}
                       className="bg-red-200 text-red-700 px-3 py-1 rounded"
                     >
@@ -102,6 +122,18 @@ function IngredientsGroupList() {
           }}
           ingredientsGroupToEdit={ingredientsGroupToEdit}
           isEditingAction={true}
+        />
+      )}
+      {isDeleteDialogOpen && (
+        <IngredientsGroupDeleteDialog
+          ingredientsGroupName={ingredientsGroupToDelete?.name}
+          onCancel={() => {
+            setIsDeleteDialogOpen(false);
+            setIngredientsGroupToDelete(null);
+          }}
+          onProceed={() => {
+            onProceedDelete();
+          }}
         />
       )}
     </div>

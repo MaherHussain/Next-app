@@ -28,3 +28,8 @@ export async function editIngredientGroup({ id, name, ingredients }: { id: strin
     const response = await http.put<IngredientGroup>(`/ingredients-group`, { id, name, ingredients })
     return response.data
 }
+export async function deleteIngredientGroup(id: string): Promise<{ success: boolean; message: string }> {
+
+    const response = await http.delete<{ success: boolean; message: string }>('/ingredients-group', { data: { id } })
+    return response.data
+}
