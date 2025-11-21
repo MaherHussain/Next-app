@@ -23,3 +23,8 @@ export async function addIngredientGroup({ name, ingredients, restaurantId }: { 
     const response = await http.post<IngredientGroup>(`/ingredients-group`, { name, ingredients, restaurantId })
     return response.data
 }
+export async function editIngredientGroup({ id, name, ingredients }: { id: string, name: string, ingredients: string[] }): Promise<IngredientGroup> {
+
+    const response = await http.put<IngredientGroup>(`/ingredients-group`, { id, name, ingredients })
+    return response.data
+}

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addIngredientGroup, getIngredientGroups } from "../services/ingredients-group-services";
+import { addIngredientGroup, editIngredientGroup, getIngredientGroups } from "../services/ingredients-group-services";
 
 export function useGetIngredientsGroups({ restaurantId }: { restaurantId: string }) {
     return useQuery({
@@ -15,6 +15,17 @@ export function useAddIngredientGroup() {
     return useMutation({
         mutationFn: (newGroup: { name: string; ingredients: string[]; restaurantId: string }) =>
             addIngredientGroup(newGroup),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ingredient-groups'] });
+        },
+    });
+}
+
+export function useEditIngredientGroup() {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (updatedGroup: { id: string; name: string; ingredients: string[] }) =>
+            editIngredientGroup(updatedGroup),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['ingredient-groups'] });
         },
