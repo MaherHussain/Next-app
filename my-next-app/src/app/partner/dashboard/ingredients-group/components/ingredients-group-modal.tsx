@@ -1,61 +1,105 @@
 'use client'
-import {useState} from 'react'
-import { useGetAllIngredients } from '@/app/queries/ingredients';
-import { useUser } from '@/app/utils/providers/UserContext';
-import { useAddIngredientGroup } from '@/app/queries/ingredients-groups';
-import { showToast } from '@/app/utils/toast';
+import { useEffect, useState } from "react";
+import { useGetAllIngredients } from "@/app/queries/ingredients";
+import { useUser } from "@/app/utils/providers/UserContext";
+import {
+  useAddIngredientGroup,
+  useEditIngredientGroup,
+} from "@/app/queries/ingredients-groups";
+import { showToast } from "@/app/utils/toast";
 
 interface IngredientsGroupModalProps {
   isOpen: boolean;
   onClose: () => void;
+  ingredientsGroupToEdit?: {
+    _id: string;
+    name: string;
+    ingredients: string[];
+  };
+  isEditingAction?: boolean;
 }
 
-function IngredientsGroupModal({ isOpen, onClose }: IngredientsGroupModalProps) {
-const [formData, setFormData] = useState<{
+function IngredientsGroupModal({
+  isOpen,
+  onClose,
+  ingredientsGroupToEdit,
+  isEditingAction,
+}: IngredientsGroupModalProps) {
+  const [formData, setFormData] = useState<{
     name: string;
-    ingredients: string[]; 
-}>({ name: "", ingredients: [] });
-const { user } = useUser();
+    ingredients: string[];
+  }>({ name: "", ingredients: [] });
+  const { user } = useUser();
 
   const restaurantId =
     typeof user?.restaurantId === "string"
       ? user.restaurantId
       : user?.restaurantId?._id ?? "";
 
-function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+  useEffect(() => {
+    if (isEditingAction && ingredientsGroupToEdit) {
+      setFormData({
+        name: ingredientsGroupToEdit.name,
+        ingredients: ingredientsGroupToEdit.ingredients.map((ing: any) =>
+          typeof ing === "string" ? ing : ing._id
+        ),
+      });
+    } else {
+      setFormData({ name: "", ingredients: [] });
+    }
+  }, [isEditingAction, ingredientsGroupToEdit]);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-    function handleIngredientToggle(ingredientId: string) {
+  function handleIngredientToggle(ingredientId: string) {
     setFormData((prev) => {
       const isSelected = prev.ingredients.includes(ingredientId);
       return {
         ...prev,
         ingredients: isSelected
-          ? prev.ingredients.filter(id => id !== ingredientId)
-          : [...prev.ingredients, ingredientId]
+          ? prev.ingredients.filter((id) => id !== ingredientId)
+          : [...prev.ingredients, ingredientId],
       };
     });
   }
 
   const { mutate: addIngredientGroup } = useAddIngredientGroup();
+  const { mutate: editIngredientGroup } = useEditIngredientGroup();
 
   function onSave() {
-    addIngredientGroup({ ...formData, restaurantId },
+    if (isEditingAction && ingredientsGroupToEdit) {
+      editIngredientGroup(
+        {
+          id: ingredientsGroupToEdit._id,
+          name: formData.name,
+          ingredients: formData.ingredients,
+        },
+        {
+          onSuccess: () => {
+            showToast.success(`Ingredient group updated successfully`);
+            onClose();
+          },
+        }
+      );
+    } else {
+      addIngredientGroup(
+        { ...formData, restaurantId },
         {
           onSuccess: () => {
             showToast.success(`${formData.name} added successfully`);
             onClose();
           },
         }
-    );
-    
+      );
+    }
   }
-   const { data: ingredientsData, isLoading } = useGetAllIngredients({
-     restaurantId,
-   });
-   const ingredients = ingredientsData?.data || [];
+  const { data: ingredientsData, isLoading } = useGetAllIngredients({
+    restaurantId,
+  });
+  const ingredients = ingredientsData?.data || [];
 
   if (!isOpen) return null;
 

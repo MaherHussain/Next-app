@@ -1,30 +1,31 @@
 'use client'
-import React from 'react'
+import { useState } from "react";
 import { useGetIngredientsGroups } from "@/app/queries/ingredients-groups";
-import { useUser } from '@/app/utils/providers/UserContext';
+import { useUser } from "@/app/utils/providers/UserContext";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
-import { MdDelete } from 'react-icons/md';
-import { LiaPenSolid } from 'react-icons/lia';
+import { MdDelete } from "react-icons/md";
+import { LiaPenSolid } from "react-icons/lia";
+import { IngredientsGroupModal } from ".";
 
 interface IngredientGroup {
-    _id: string
-    name: string
-    ingredients: string[]
-    createdAt: string
-    updatedAt: string
+  _id: string;
+  name: string;
+  ingredients: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 function IngredientsGroupList() {
-
   const { user } = useUser();
   const restaurantId =
     typeof user?.restaurantId === "string"
       ? user.restaurantId
       : user?.restaurantId?._id ?? "";
-  const { data, isLoading, error } = useGetIngredientsGroups({ restaurantId })
+  const { data, isLoading, error } = useGetIngredientsGroups({ restaurantId });
 
-  if (isLoading) return <div>Loading...</div>
-  if (error) return <div>Error loading ingredients groups</div>
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [ingredientsGroupToEdit, setIngredientsGroupToEdit] =
+    useState<IngredientGroup | null>(null);
 
   return (
     <div className="p-4 mt-4 bg-white max-h-screen overflow-y-auto rounded-lg shadow">
@@ -60,7 +61,7 @@ function IngredientsGroupList() {
                     {group.ingredients.map((ing: any) => (
                       <div
                         key={ing._id}
-                        className="m-1 p-1 text-center rounded"
+                        className="m-1 p-1 truncate text-left rounded"
                       >
                         <span>{ing.name}</span>
                       </div>
@@ -69,8 +70,8 @@ function IngredientsGroupList() {
                   <td className="py-2 px-4 space-x-2">
                     <button
                       onClick={() => {
-                        /* setIngredientToEdit(group);
-                                    setIsEditModalOpen(true); */
+                        setIngredientsGroupToEdit(group);
+                        setIsEditModalOpen(true);
                       }}
                       className="bg-blue-200 text-blue-700 px-3 py-1 rounded "
                     >
@@ -91,6 +92,17 @@ function IngredientsGroupList() {
             </tbody>
           </table>
         </div>
+      )}
+      {isEditModalOpen && ingredientsGroupToEdit && (
+        <IngredientsGroupModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setIngredientsGroupToEdit(null);
+          }}
+          ingredientsGroupToEdit={ingredientsGroupToEdit}
+          isEditingAction={true}
+        />
       )}
     </div>
   );
