@@ -1,6 +1,9 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
 import Product from "@/lib/models/Product";
+import Ingredient from '@/lib/models/Ingredient';
+
+void Ingredient;
 
 export async function GET(request: NextRequest) {
     await dbConnect();
@@ -32,7 +35,7 @@ export async function GET(request: NextRequest) {
             filter.active = true;
         }
         [items, total] = await Promise.all([
-            Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).populate({ path: "ingredients", select: "name cost" }),
             Product.countDocuments(filter)
         ]);
        

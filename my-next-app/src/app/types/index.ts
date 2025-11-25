@@ -7,6 +7,11 @@ export interface ContactData {
     address?: string;
 
 }
+export interface Ingredient {
+    _id: string;
+    name: string;
+    cost: number;
+}
 export interface Item {
     product: { id: Types.ObjectId, name: string, price: number }
     ingredients?: {
@@ -29,6 +34,7 @@ export interface Product {
     name: string;
     price: number;
     active?: boolean;
+    ingredients?: Ingredient[];
     createdAt?: string;
     updatedAt?: string;
     restaurantId?: string;

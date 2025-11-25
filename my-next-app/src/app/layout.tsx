@@ -5,6 +5,7 @@ import "./globals.css";
 import ReactQueryProvider from "./utils/providers/ReactQueriesProviders";
 import { UserProvider } from "./utils/providers/UserContext";
 import { ToastContainer } from "react-toastify";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

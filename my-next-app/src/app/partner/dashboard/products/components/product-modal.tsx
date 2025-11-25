@@ -1,7 +1,12 @@
+'use client'
 import React, { useEffect, useState } from "react";
 import { useAddProduct, useEditProduct } from "../../../../queries/products";
 import { useUser } from "@/app/utils/providers/UserContext";
 import { FiInfo } from "react-icons/fi";
+import { useGetAllIngredients } from "@/app/queries/ingredients";
+import LoadingSpinner from "@/app/components/shared/loading-spinner";
+import { Ingredient } from "@/app/types";
+import { showToast } from "@/app/utils/toast";
 
 interface ProductAddModalProps {
   isOpen: boolean;
@@ -11,6 +16,7 @@ interface ProductAddModalProps {
     name: string;
     price: number;
     active?: boolean;
+    ingredients?: Ingredient[];
   };
   onClose: () => void;
 }
@@ -21,18 +27,20 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
   isEditAction = false,
   productToEdit,
 }) => {
-  
   const [productFormData, setProductFormData] = useState<{
     name: string;
     price: number | "";
     active: boolean;
-  }>({ name: "", price: "", active: true });
-  
+    ingredients?: string[];
+  }>({ name: "", price: "", active: true, ingredients: [] });
+
   const [showInfoPopup, setShowInfoPopup] = useState(false);
-  
+
   const { mutate: addProduct } = useAddProduct();
 
   const { mutate: editProduct } = useEditProduct();
+
+  const ingredientsIds = productToEdit?.ingredients?.map((ing) => ing._id);
 
   useEffect(() => {
     if (isEditAction && productToEdit) {
@@ -40,9 +48,15 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
         name: productToEdit.name || "",
         price: productToEdit.price || "",
         active: productToEdit.active ?? true,
+        ingredients: ingredientsIds || [],
       });
     } else {
-      setProductFormData({ name: "", price: "", active: true });
+      setProductFormData({
+        name: "",
+        price: "",
+        active: true,
+        ingredients: [],
+      });
     }
   }, [isEditAction, productToEdit]);
 
@@ -62,42 +76,94 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
   };
 
   const { user } = useUser();
-  const restaurantId = typeof user?.restaurantId === 'string' 
-  ? user.restaurantId 
-  : user?.restaurantId?._id ?? "";
+  const restaurantId =
+    typeof user?.restaurantId === "string"
+      ? user.restaurantId
+      : user?.restaurantId?._id ?? "";
+
+  const { data: ingredients, isLoading: isLoadingIngredients } =
+    useGetAllIngredients({ restaurantId });
+
+  function handleIngredientToggle(ingredientId: string) {
+    setProductFormData((prev) => {
+      const isSelected = prev.ingredients?.includes(ingredientId);
+      return {
+        ...prev,
+        ingredients: isSelected
+          ? prev.ingredients?.filter((id) => id !== ingredientId)
+          : [...(prev.ingredients ?? []), ingredientId],
+      };
+    });
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!productFormData.name || productFormData.price === "") return;
+    const productNameSnapshot = productFormData.name;
+
     if (!isEditAction) {
       // handle add product
-      addProduct({
-        name: productFormData.name,
-        price: Number(productFormData.price),
-        restaurantId,
-        active: productFormData.active,
-      });
+      addProduct(
+        {
+          name: productFormData.name,
+          price: Number(productFormData.price),
+          restaurantId,
+          active: productFormData.active,
+          ingredients: productFormData.ingredients ?? [],
+        },
+        {
+          onSuccess: () => {
+            console.log("Product added successfully");
+            showToast.success(
+              `Product "${productNameSnapshot}" added successfully!`
+            );
+            setProductFormData({
+              name: "",
+              price: "",
+              active: true,
+              ingredients: [],
+            });
+            onClose();
+          },
+        }
+      );
     }
     // Handle edit case
     if (productToEdit) {
-      editProduct({
-        product: {
-          id: productToEdit._id,
-          name: productFormData.name,
-          price: Number(productFormData.price),
-          active: productFormData.active,
+      editProduct(
+        {
+          product: {
+            id: productToEdit._id,
+            name: productFormData.name,
+            price: Number(productFormData.price),
+            active: productFormData.active,
+            ingredients: productFormData.ingredients ?? [],
+          },
         },
-      });
+        {
+          onSuccess: () => {
+            console.log("Product edited successfully");
+            showToast.success(
+              `Product "${productNameSnapshot}" edited successfully!`
+            );
+            setProductFormData({
+              name: "",
+              price: "",
+              active: true,
+              ingredients: [],
+            });
+            onClose();
+          },
+        }
+      );
     }
-    setProductFormData({ name: "", price: "", active: true });
-    onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
+    <div className="absolute top-0 left-0 right-0 bottom-0 bg-black bg-opacity-40 flex items-center justify-center mt-0 z-50">
+      <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-md ">
         <h2 className="text-xl font-semibold mb-4">
           {isEditAction ? "Edit Product" : "Add New Product"}
         </h2>
@@ -126,6 +192,40 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
               step="0.01"
             />
           </div>
+          <div>
+            <label className="block text-gray-700 mb-2">
+              Select Ingredients{" "}
+              {productFormData.ingredients?.length
+                ? `(${productFormData.ingredients?.length} selected)`
+                : null}
+            </label>
+            {isLoadingIngredients ? (
+              <div className="text-gray-500">
+                <LoadingSpinner size="small" />
+              </div>
+            ) : ingredients?.data?.length === 0 ? (
+              <div className="text-gray-500">No ingredients available</div>
+            ) : (
+              <div className="border border-gray-300 rounded-lg p-3 max-h-60 overflow-y-auto space-y-2">
+                {ingredients?.data.map((ingredient) => (
+                  <label
+                    key={ingredient._id}
+                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={productFormData?.ingredients?.includes(
+                        ingredient._id
+                      )}
+                      onChange={() => handleIngredientToggle(ingredient._id)}
+                      className="appearance-none w-4 h-4 rounded-full border-2 border-gray-300 checked:bg-orange-500 checked:border-orange-500 relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-2 checked:after:h-2 checked:after:bg-white checked:after:rounded-full accent-orange-500"
+                    />
+                    <span className="text-gray-700">{ingredient.name}</span>
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <div className="relative inline-block">
               <input
@@ -140,6 +240,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
                 className="absolute top-0 left-0 w-5 h-5 bg-white rounded-full border border-slate-300 shadow-sm transition-transform duration-300 peer-checked:translate-x-6 peer-checked:border-green-600 cursor-pointer"
               ></label>
             </div>
+
             <div className="flex items-center gap-1 relative">
               <label
                 htmlFor="switch-component-green"
@@ -158,8 +259,9 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
                 {showInfoPopup && (
                   <div className="absolute left-0 top-6 w-64 p-3 bg-gray-800 text-white text-xs rounded-lg shadow-lg z-10">
                     <p>
-                      When active, this product will be visible to customers and available for ordering. 
-                      When inactive, the product will be hidden from the menu but can be reactivated later.
+                      When active, this product will be visible to customers and
+                      available for ordering. When inactive, the product will be
+                      hidden from the menu but can be reactivated later.
                     </p>
                     <div className="absolute -top-1 left-2 w-2 h-2 bg-gray-800 transform rotate-45"></div>
                   </div>

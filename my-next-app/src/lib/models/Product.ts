@@ -8,6 +8,7 @@ export interface IProduct extends Document {
     category?: string,
     description?: string,
     imageUrl?: string,
+    ingredients: [{ type: Schema.Types.ObjectId, ref: 'Ingredient' }];
 }
 
 const ProductSchema: Schema<IProduct> = new Schema({
@@ -18,6 +19,7 @@ const ProductSchema: Schema<IProduct> = new Schema({
     category: { type: String },
     description: { type: String },
     imageUrl: { type: String },
+    ingredients: [{ type: Schema.Types.ObjectId, ref: 'Ingredient' }],
 }, { timestamps: true })
 
 export default (mongoose.models.Product as Model<IProduct>) ||

@@ -13,11 +13,14 @@ import { ProductModal, ProductDeleteDialog } from "./";
 import SearchInput from "@/app/components/shared/Searchinput";
 import useDebounce from "@/hooks/useDebounce";
 import { useUser } from "@/app/utils/providers/UserContext";
+import { Ingredient } from "@/app/types";
+import { showToast } from "@/app/utils/toast";
 interface Product {
   _id: string;
   name: string;
   price: number;
   createdAt?: string;
+  ingredients?: Ingredient[];
 }
 
 const limit = 10;
@@ -36,11 +39,10 @@ const ProductList: React.FC = () => {
 
   const { user } = useUser();
 
-  
-  const restaurantId = typeof user?.restaurantId === 'string' 
-  ? user.restaurantId 
-  : user?.restaurantId?._id ?? "";
-
+  const restaurantId =
+    typeof user?.restaurantId === "string"
+      ? user.restaurantId
+      : user?.restaurantId?._id ?? "";
 
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -88,6 +90,19 @@ const ProductList: React.FC = () => {
     setPage(1);
   }
 
+  function onDeleteProduct() {
+    if (selectedProductToDelete) {
+      deleteMutate(selectedProductToDelete._id, {
+        onSuccess: () => {
+          showToast.warning(
+            `Product "${selectedProductToDelete.name}" deleted successfully!`
+          );
+          setIsDeleteDialogOpen(false);
+        },
+      });
+    }
+  }
+
   return (
     <div className="p-4 bg-white max-h-screen overflow-y-auto ">
       <SearchInput onSearch={handleSearch} />
@@ -113,11 +128,14 @@ const ProductList: React.FC = () => {
           <table className="min-w-full bg-white border border-gray-200 rounded-lg shadow">
             <thead>
               <tr className="bg-gray-100">
-                <th className="py-2 px-4 text-left font-semibold w-1/2">
+                <th className="py-2 px-4 text-left font-semibold w-1/4 ">
                   Name
                 </th>
-                <th className="py-2 px-4 text-left font-semibold w-1/3">
+                <th className="py-2 px-4 text-left font-semibold w-1/4">
                   Price
+                </th>
+                <th className="py-2 px-4 text-left font-semibold w-1/2">
+                  Ingredients
                 </th>
                 <th className="py-2 px-4 text-left font-semibold "></th>
               </tr>
@@ -125,9 +143,19 @@ const ProductList: React.FC = () => {
             <tbody>
               {productsToUse.map((product: Product) => (
                 <tr key={product._id} className="border-t">
-                  <td className="py-2 px-4">{product.name}</td>
+                  <td className="py-2 px-4 truncate">{product.name}</td>
                   <td className="py-2 px-4">{PriceFormatter(product.price)}</td>
                   <td className="py-2 px-4 space-x-2">
+                    {product.ingredients?.map((ingredient) => (
+                      <span
+                        key={ingredient._id}
+                        className="inline-block bg-gray-200 my-1 text-gray-700 px-2 py-1 rounded"
+                      >
+                        {ingredient.name}
+                      </span>
+                    ))}
+                  </td>
+                  <td className="py-2 px-4 space-x-2  flex justify-end">
                     <button
                       onClick={() => {
                         setIsEditModalOpen(true);
@@ -179,12 +207,7 @@ const ProductList: React.FC = () => {
           productName={selectedProductToDelete?.name}
           isOpen={isDeleteDialogOpen}
           onCancel={() => setIsDeleteDialogOpen(false)}
-          onProceed={() => {
-            if (selectedProductToDelete) {
-              deleteMutate(selectedProductToDelete._id);
-            }
-            setIsDeleteDialogOpen(false);
-          }}
+          onProceed={onDeleteProduct}
         />
       )}
       {isEditModalOpen && (
