@@ -1,6 +1,10 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
 import Product from "@/lib/models/Product";
+import Ingredient from '@/lib/models/Ingredient';
+
+
+void Ingredient; // Ensure Ingredient model is included for population
 
 export async function GET() {
     await dbConnect();
@@ -30,8 +34,8 @@ export async function GET() {
         }
 
         const [products, total] = await Promise.all([
-            Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
-            Product.countDocuments({ restaurantId })
+            Product.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).populate({ path: "ingredients", select: "name cost" }).lean(),
+            Product.countDocuments(filter)
         ]);
 
         const totalPages = Math.max(1, Math.ceil(total / limit));
@@ -55,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     await dbConnect()
     try {
-        const { name, price, restaurantId, active } = await req.json()
+        const { name, price, restaurantId, active, ingredients } = await req.json()
 
         if (!name || !price || !restaurantId) {
             return NextResponse.json({
@@ -65,7 +69,7 @@ export async function POST(req: NextRequest) {
 
         }
         const newProduct = new Product({
-            name, price, restaurantId, active: active !== undefined ? active : true
+            name, price, restaurantId, ingredients, active: active !== undefined ? active : true
         })
 
         await newProduct.save()

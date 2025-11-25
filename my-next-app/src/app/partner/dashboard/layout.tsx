@@ -9,6 +9,7 @@ import { useGetRestaurant } from "@/app/queries/restaurant";
 import Button from "@/app/components/shared/Button";
 import { NotificationProvider } from "./NotificationContext";
 import NotificationList from "./NotificationList";
+
 export default function PartnerLayout({
   children,
 }: {

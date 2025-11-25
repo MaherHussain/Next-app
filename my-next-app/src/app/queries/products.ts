@@ -12,13 +12,13 @@ export function useGetProducts({ page, limit, restaurantId, activeOnly }: { page
 export function useAddProduct() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ name, price, restaurantId, active }: { name: string, price: number, restaurantId: string, active?: boolean }) => addProduct({ name, price, restaurantId, active }),
+        mutationFn: ({ name, price, restaurantId, active, ingredients }: { name: string, price: number, restaurantId: string, active?: boolean, ingredients?: string[] }) => addProduct({ name, price, restaurantId, active, ingredients }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
         onError: (err: any) => {
             const errorMessage = err?.response?.data?.message || err?.message || "An error occurred";
-            console.log(errorMessage)
+            return errorMessage
         }
     })
 }
@@ -32,7 +32,7 @@ export function useDeleteProduct() {
         },
         onError: (err: any) => {
             const errorMessage = err?.response?.data?.message || err?.message || "An error occurred";
-            console.log(errorMessage)
+            return errorMessage
         }
     })
 }
@@ -40,13 +40,13 @@ export function useDeleteProduct() {
 export function useEditProduct() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ product }: { product: { id: string, name?: string; price?: number; active?: boolean } }) => editProduct(product),
+        mutationFn: ({ product }: { product: { id: string, name?: string; price?: number; active?: boolean, ingredients?: string[] } }) => editProduct(product),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
         onError: (err: any) => {
             const errorMessage = err?.response?.data?.message || err?.message || "An error occurred";
-            console.log(errorMessage)
+            return errorMessage
         }
     })
 }
