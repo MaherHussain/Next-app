@@ -1,5 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { placeOrder, acceptOrder } from '../services/order-services'
+import { placeOrder, acceptOrder, getAllOrders } from '../services/order-services'
+
+
+export function useGetAllOrders(restaurantId: string, page?: number, limit?: number) {
+    return useQuery({
+        queryKey: ['orders', { page, limit, restaurantId }],
+        queryFn: () => getAllOrders({ restaurantId, page, limit }),
+        retry: 3,
+        enabled: !!restaurantId,
+    })
+}
 
 export function usePlaceOrder(onSuccessCallback?: () => void) {
 

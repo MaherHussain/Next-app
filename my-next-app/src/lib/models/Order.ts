@@ -15,6 +15,7 @@ export interface IOrder extends Document {
     status: string
     restaurantId: Types.ObjectId
 }
+
 // Counter schema for order number auto-increment
 const CounterSchema = new Schema({
     _id: { type: String, required: true },
@@ -36,7 +37,7 @@ const orderSchema: Schema<IOrder> | null = new Schema({
         phone: {
             type: String, required: true, validate: {
                 validator: (v: string): boolean => /\d{10}/.test(v),
-                message: 'Phone number should be 10-digits nmber'
+                message: 'Phone number should be 10-digits number'
             }
         },
         email: {

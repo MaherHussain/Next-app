@@ -8,7 +8,7 @@ import { FcOk } from "react-icons/fc";
 import CustomerDetailsModal from "./customer-details-modal";
 import TimeSelectModal from "./time-select-modal";
 import { ContactData } from "@/app/types";
-import { usePlaceOrder } from "@/app/queries/order";
+import { usePlaceOrder } from "@/app/queries/orders";
 import { useCart } from "@/hooks/useCart";
 import DialogModal from "../shared/dialog-modal";
 import LoadingSpinner from "../shared/loading-spinner";
