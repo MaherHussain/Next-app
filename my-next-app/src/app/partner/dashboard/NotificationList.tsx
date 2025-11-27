@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNotification } from "./NotificationContext";
-import { useAcceptOrder } from "@/app/queries/order";
+import { useAcceptOrder } from "@/app/queries/orders";
 
 // Add this import
 import { useRef } from "react";
