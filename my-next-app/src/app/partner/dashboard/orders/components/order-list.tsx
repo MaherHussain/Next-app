@@ -3,22 +3,28 @@ import { useGetAllOrders } from '@/app/queries/orders';
 import { useUser } from '@/app/utils/providers/UserContext';
 import LoadingSpinner from '@/app/components/shared/loading-spinner';
 import { dateFormatter, PriceFormatter } from '@/app/utils/helpers/helpers';
+import OrderDetailsModal from "./order-details-modal";
 
 function OrderList() {
   const [page, setPage] = useState(1);
   const limit = 10;
-    
-      const { user } = useUser();
-    
-      const restaurantId =
-        typeof user?.restaurantId === "string"
-          ? user.restaurantId
-          : user?.restaurantId?._id ?? "";
 
-  const { data, isLoading, isError } = useGetAllOrders(restaurantId, page, limit);
- const totalOrders = data?.meta.total || 0;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
+  const { user } = useUser();
 
+  const restaurantId =
+    typeof user?.restaurantId === "string"
+      ? user.restaurantId
+      : user?.restaurantId?._id ?? "";
+
+  const { data, isLoading, isError } = useGetAllOrders(
+    restaurantId,
+    page,
+    limit
+  );
+  const totalOrders = data?.meta.total || 0;
 
   return (
     <div className="">
@@ -65,7 +71,15 @@ function OrderList() {
                   <td className="py-2 px-4">{PriceFormatter(order.total)}</td>
                   <td className="py-2 px-4">{order.status}</td>
                   <td className="py-2 px-4">
-                    <button className="text-blue-500">View</button>
+                    <button
+                      className="text-blue-500"
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setIsModalOpen(true);
+                      }}
+                    >
+                      View
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -73,25 +87,32 @@ function OrderList() {
           </table>
         </div>
       )}
-      <div className="flex justify-center items-center mt-4 space-x-2 ">
-        <button
-          className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <span className="px-2">
-          Page {page} of {totalOrders}
-        </span>
-        <button
-          className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
-          onClick={() => setPage((p) => Math.min(totalOrders, p + 1))}
-          disabled={page === totalOrders}
-        >
-          Next
-        </button>
-      </div>
+      {data && (
+        <div className="flex justify-center items-center mt-4 space-x-2 ">
+          <button
+            className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            Previous
+          </button>
+          <span className="px-2">
+            Page {page} of {totalOrders}
+          </span>
+          <button
+            className="px-3 py-1 rounded bg-gray-200 text-gray-700 disabled:opacity-50"
+            onClick={() => setPage((p) => Math.min(totalOrders, p + 1))}
+            disabled={page === totalOrders}
+          >
+            Next
+          </button>
+        </div>
+      )}
+      <OrderDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        orderId={selectedOrder?._id || null}
+      />
     </div>
   );
 }

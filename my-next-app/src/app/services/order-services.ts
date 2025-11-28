@@ -32,6 +32,10 @@ export async function getAllOrders({ page, limit, restaurantId }: { page?: numbe
     return response.data
 }
 
+export async function getOrderById(orderId: string): Promise<OrderResponse> {
+    const response = await http.get(`orders/${orderId}`)
+    return response.data
+}
 export async function placeOrder(payload: Payload): Promise<OrderResponse> {
     const response = await http.post('order/place-order', payload)
     return response.data

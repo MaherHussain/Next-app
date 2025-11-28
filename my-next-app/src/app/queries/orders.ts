@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { placeOrder, acceptOrder, getAllOrders } from '../services/order-services'
+import { placeOrder, acceptOrder, getAllOrders, getOrderById } from '../services/order-services'
 
 
 export function useGetAllOrders(restaurantId: string, page?: number, limit?: number) {
@@ -8,6 +8,15 @@ export function useGetAllOrders(restaurantId: string, page?: number, limit?: num
         queryFn: () => getAllOrders({ restaurantId, page, limit }),
         retry: 3,
         enabled: !!restaurantId,
+    })
+}
+
+export function getOneOrder(orderId: string | null) {
+    return useQuery({
+        queryKey: ['order', orderId],
+        queryFn: () => getOrderById(orderId as string),
+        enabled: !!orderId,
+        retry: 3,
     })
 }
 
