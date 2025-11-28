@@ -14,6 +14,8 @@ export interface IOrder extends Document {
     total: number
     status: string
     restaurantId: Types.ObjectId
+    createdAt: string
+    updatedAt: string
 }
 
 // Counter schema for order number auto-increment
