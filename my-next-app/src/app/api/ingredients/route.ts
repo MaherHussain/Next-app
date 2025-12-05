@@ -14,7 +14,7 @@ export async function GET () {
         const limit = Math.max(1, Math.min(100, parseInt(limitParam, 10) || 10)); // cap limit to 100
         const skip = (page - 1) * limit;
         const restaurantId = url?.searchParams.get('restaurantId');
-        const allIngredients = url?.searchParams.get('all') === 'true';
+        const all = url?.searchParams.get('all');
 
         if (!restaurantId) {
             return NextResponse.json({ success: false, message: 'restaurantId required' }, { status: 400 });
@@ -22,8 +22,8 @@ export async function GET () {
 
         const filter: any = { restaurantId }
 
-        if (allIngredients) {
-            const ingredients = await Ingredient.find({ filter }).sort({ createdAt: -1 });
+        if (all === 'true') {
+            const ingredients = await Ingredient.find({ restaurantId }).sort({ createdAt: -1 });
             return NextResponse.json({ success: true, data: ingredients }, { status: 200 });
         } else {
             const [ingredients, total] = await Promise.all([

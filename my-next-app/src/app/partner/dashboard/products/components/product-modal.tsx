@@ -194,7 +194,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
           </div>
           <div>
             <label className="block text-gray-700 mb-2">
-              Select Ingredients{" "}
+              Select default Ingredients
               {productFormData.ingredients?.length
                 ? `(${productFormData.ingredients?.length} selected)`
                 : null}
