@@ -12,7 +12,7 @@ export function useGetIngredients({ restaurantId, page, limit }: { restaurantId:
 
 export function useGetAllIngredients({ restaurantId }: { restaurantId: string }) {
     return useQuery({
-        queryKey: ['ingredients', { restaurantId, all: true }],
+        queryKey: ['ingredients', { restaurantId, all: "true" }],
         queryFn: () => getAllIngredients({ restaurantId }),
         retry: 3,
         enabled: !!restaurantId,
