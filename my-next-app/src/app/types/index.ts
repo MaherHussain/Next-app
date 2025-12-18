@@ -12,14 +12,14 @@ export interface Ingredient {
     name: string;
     cost: number;
 }
+export interface IngredientsGroup {
+    _id: string
+    ingredients: Ingredient[]
+    name: string
+}
 export interface Item {
     product: { id: Types.ObjectId, name: string, price: number }
-    ingredients?: {
-        drissing?: string[],
-        fravaelge?: string[],
-        smorelse?: string[],
-
-    },
+    ingredients?: Record<string, Ingredient[]>,  // Dynamic group names -> arrays of ingredient objects
     quantity: number
 }
 export interface PickupData {

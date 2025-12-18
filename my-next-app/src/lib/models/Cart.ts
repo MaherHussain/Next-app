@@ -16,9 +16,13 @@ export const itemSchema = new Schema<Item>(
         },
         quantity: { type: Schema.Types.Mixed, required: true },
         ingredients: {
-            drissing: [{ type: String }],
-            fravaelge: [{ type: String }],
-            smorelse: [{ type: String }],
+            type: Map,
+            of: [{
+                _id: { type: String },
+                name: { type: String },
+                cost: { type: Number }
+            }],
+            default: {}
         },
     },
     { _id: false }

@@ -13,6 +13,7 @@ import { useCart } from "@/hooks/useCart";
 import DialogModal from "../shared/dialog-modal";
 import LoadingSpinner from "../shared/loading-spinner";
 import { useGetRestaurant } from "@/app/queries/restaurant";
+
 const sections = [
   {
     id: "contact",
@@ -32,7 +33,7 @@ const sections = [
     heading: "Select time",
     headingIcon: <IoTimeOutline className="w-6 h-6" />,
     buttonText: "Select time",
-    options: ["ASAP", "custome time"],
+    options: ["ASAP", "custom time"],
   },
   {
     id: "payment",
@@ -130,7 +131,7 @@ function OrderDetails() {
   return (
     <div className="border-b p-5 bg-gray-50 rounded-md">
       {sections.map((section, index) => {
-        const isModalTirgger =
+        const isModalTrigger =
           (section.options && section.options?.length > 1) || !section.options;
         return (
           <div
@@ -145,7 +146,7 @@ function OrderDetails() {
               )}
             </div>
 
-            {isModalTirgger ? (
+            {isModalTrigger ? (
               <div
                 onClick={() => {
                   setIsOpen(true);

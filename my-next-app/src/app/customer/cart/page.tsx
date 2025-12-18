@@ -1,9 +1,9 @@
 "use client";
-import { useGetCartById } from "../queries/cart";
-import OrderOverview, { Item } from "../components/order/order-overview";
+import { useGetCartById } from "@/app/queries/cart";
+import OrderOverview, { Item } from "@/app/components/order/order-overview";
 import { useCart } from "@/hooks/useCart";
-import OrderDetails from "../components/order/order-details";
-import LoadingSpinner from "../components/shared/loading-spinner";
+import OrderDetails from "@/app/components/order/order-details";
+import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import Link from "next/link";
 
 export default function cart() {
@@ -15,9 +15,7 @@ export default function cart() {
     return {
       product: item.product,
       ingredients: {
-        smorelse: [...item.ingredients.smorelse],
-        drissing: [...item.ingredients.drissing],
-        unchoose: [...item.ingredients.fravaelge],
+        ...item.ingredients,
       },
       quantity: item.quantity,
       totalPrice: item.totalPrice,
