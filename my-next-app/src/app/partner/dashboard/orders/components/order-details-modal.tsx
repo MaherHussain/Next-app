@@ -135,7 +135,6 @@ function OrderDetailsModal({ isOpen, onClose, orderId }: OrderDetailsModalProps)
                           <p className="font-medium text-gray-800">
                             {item.quantity} x {item.product?.name || "Product"}
                           </p>
-                          
                         </div>
                         <p className="font-semibold text-gray-800">
                           {PriceFormatter(
@@ -143,36 +142,33 @@ function OrderDetailsModal({ isOpen, onClose, orderId }: OrderDetailsModalProps)
                           )}
                         </p>
                       </div>
-                      {/* these items should be dynamic by ingredientsGroups */} 
+                      
                       {item.ingredients && (
                         <div className="mt-2 text-xs text-gray-600 space-y-1">
-                          {item.ingredients.smorelse &&
-                            item.ingredients.smorelse.length > 0 && (
-                              <div>
-                                <span className="font-medium">Add:</span>
-                                <span className="ml-1">
-                                  {item.ingredients.smorelse.join(", ")}
-                                </span>
-                              </div>
-                            )}
-                          {item.ingredients.drissing &&
-                            item.ingredients.drissing.length > 0 && (
-                              <div>
-                                <span className="font-medium">Dressing:</span>
-                                <span className="ml-1">
-                                  {item.ingredients.drissing.join(", ")}
-                                </span>
-                              </div>
-                            )}
-                          {item.ingredients.fravaelge &&
-                            item.ingredients.fravaelge.length > 0 && (
-                              <div>
-                                <span className="font-medium">Remove:</span>
-                                <span className="ml-1">
-                                  {item.ingredients.fravaelge.join(", ")}
-                                </span>
-                              </div>
-                            )}
+                          {item.ingredients && item.ingredients.length > 0 && (
+                            <div>
+                              <span className="font-medium">Add:</span>
+                              <span className="ml-1">
+                                {item.ingredients.join(", ")}
+                              </span>
+                            </div>
+                          )}
+                          {item.ingredients && item.ingredients.length > 0 && (
+                            <div>
+                              <span className="font-medium">Dressing:</span>
+                              <span className="ml-1">
+                                {item.ingredients.join(", ")}
+                              </span>
+                            </div>
+                          )}
+                          {item.ingredients && item.ingredients.length > 0 && (
+                            <div>
+                              <span className="font-medium">Remove:</span>
+                              <span className="ml-1">
+                                {item.ingredients.join(", ")}
+                              </span>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

@@ -1,5 +1,5 @@
 "use client";
-import ProductItem from "@/app/components/products/product-item";
+import { ProductItem } from "../[restaurantId]/products/components";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import { useGetProducts } from "@/app/queries/products";
 import { Product } from "@/app/types";

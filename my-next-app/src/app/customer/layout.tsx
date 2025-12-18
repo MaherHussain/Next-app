@@ -1,4 +1,4 @@
-import CartIcon from "../components/Cart";
+import CartIcon from "@/app/components/Cart";
 export default function CustomerLayout({
   children,
 }: {

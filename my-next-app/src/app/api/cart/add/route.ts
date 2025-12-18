@@ -4,11 +4,22 @@ import Cart, { ICart } from '@/lib/models/Cart';
 import { Item } from '@/app/types';
 
 function ingredientsMatch(a: any, b: any) {
-    return (
-        JSON.stringify(a?.drissing || []) === JSON.stringify(b?.drissing || []) &&
-        JSON.stringify(a?.fravaelge || []) === JSON.stringify(b?.fravaelge || []) &&
-        JSON.stringify(a?.smorelse || []) === JSON.stringify(b?.smorelse || [])
-    );
+    // If both are undefined or empty, they're considered matching
+    if (!a && !b) return true;
+    if (!a || !b) return false;
+
+    const aKeys = Object.keys(a);
+    const bKeys = Object.keys(b);
+
+    if (aKeys.length !== bKeys.length) return false;
+
+    for (const key of aKeys) {
+        // Compare arrays for each ingredient group by JSON stringification
+        if (JSON.stringify(a[key] || []) !== JSON.stringify(b[key] || [])) {
+            return false;
+        }
+    }
+    return true;
 }
 
 export async function POST(req: NextRequest) {
@@ -17,9 +28,8 @@ export async function POST(req: NextRequest) {
     try {
         const { cartId, product, quantity, ingredients } = await req.json()
 
-
         if (!cartId || !product || !quantity) {
-            return NextResponse.json({ messag: 'cartId, product, and quantity are required' }, { status: 400 })
+            return NextResponse.json({ message: 'cartId, product, and quantity are required' }, { status: 400 })
         }
 
         let cart: ICart | null = await Cart.findOne({ cartId })
@@ -46,7 +56,7 @@ export async function POST(req: NextRequest) {
         }
 
         await cart?.save()
-        return NextResponse.json({ mesage: "item has been added to cart", data: cart }, { status: 200 })
+        return NextResponse.json({ message: "item has been added to cart", data: cart }, { status: 200 })
 
     } catch (error) {
         console.error('[CART_ADD_ERROR]', error);
