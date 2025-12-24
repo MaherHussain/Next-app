@@ -9,6 +9,7 @@ import { useGetAllIngredients } from "@/app/queries/ingredients";
 import { nanoid } from "nanoid";
 import {QuantitySelector} from "./";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
+import { useCart } from "@/hooks/useCart";
 
 type FormData = {
   defaultIngredients: string[];
@@ -109,8 +110,8 @@ export default function IngredientsProductForm({
 
     return totalPerItem * quantityValue;
   }, [product.price, selectedIngredientsCost, quantity]);
-
-  const { mutate, isSuccess, isError, isPending } = useAddToCart();
+  const { cartId } = useCart();
+  const { mutate, isSuccess, isError, isPending } = useAddToCart({ cartId });
   const [isExtraIngredientsExpanded, setIsExtraIngredientsExpanded] =
     useState(false);
 
@@ -206,13 +207,12 @@ export default function IngredientsProductForm({
     }
 
     const payload = {
-      cartId: localStorage.getItem("cartId") || nanoid(),
       product: { name: product.name, id: product._id, price: totalPrice },
       ingredients: formattedIngredients,
       quantity,
     };
-    mutate(payload);
-    localStorage.setItem("cartId", payload.cartId);
+    mutate( payload );
+    localStorage.setItem("cartId", cartId);
   };
 
   if (isGroupsLoading || isIngredientsLoading)

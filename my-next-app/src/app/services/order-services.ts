@@ -1,8 +1,8 @@
 import http from "./http";
-import { ContactData, Item } from '../types'
+import { ContactData, CartItem } from '../types'
 
 interface Payload {
-    items: Item[]
+    items: CartItem[]
     contactData: ContactData
     total: number
     selectedTime: string

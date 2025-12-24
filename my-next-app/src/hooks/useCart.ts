@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { nanoid } from "nanoid";
-import { Item } from '@/app/types';
 import { useGetCartById } from '@/app/queries/cart';
+
 export const useCart = () => {
-    const [cartId, setCartId] = useState<string | null>(null);
-    const [cartItems, setCartItems] = useState<Item[] | null>(null)
+    const [cartId, setCartId] = useState<string>('');
+
     const { data } = useGetCartById(cartId ?? "")
     let items = []
     let total = 0
@@ -26,9 +26,3 @@ export const useCart = () => {
 
     return { cartId, items, total };
 };
-
-export const useGetCartItems = () => {
-
-
-
-}

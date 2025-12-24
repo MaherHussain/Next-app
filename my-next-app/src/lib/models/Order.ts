@@ -1,10 +1,10 @@
 import { Schema, model, models, Document, Types } from "mongoose";
 import { itemSchema } from "./Cart";
-import { ContactData, Item } from "@/app/types";
+import { ContactData, CartItem } from "@/app/types";
 
 export interface IOrder extends Document {
     orderNumber: string
-    items: Item[]
+    items: CartItem[]
     contactData: ContactData
     selectedTime: string
     estimatedTime: string
