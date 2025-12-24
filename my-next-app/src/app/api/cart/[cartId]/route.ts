@@ -3,7 +3,7 @@ import dbConnect from "@/lib/mongodb";
 import Cart from '@/lib/models/Cart';
 
 export async function GET(req: NextRequest,
-    { params }: { params: { cartId: string } }) {
+    { params }: { params: Promise<{ cartId: string }> }) {
     await dbConnect()
     try {
         const { cartId } = await params

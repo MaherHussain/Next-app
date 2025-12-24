@@ -1,18 +1,19 @@
 import http from "./http";
+import { CartItem } from "../types";
 
 export interface Payload {
-    cartId: string,
     product: { name: string, id: string, price: number },
     quantity: number,
     ingredients: Record<string, string[]>,
 }
 
+
 interface CreateCartItemResponse {
     message: string,
     data: Record<string, any>
 }
-export async function addItemToCart(payload: Payload): Promise<CreateCartItemResponse> {
-    const response = await http.post('/cart/add', payload)
+export async function addItemToCart({ cartId, payload }: { cartId: string, payload: Payload }): Promise<CreateCartItemResponse> {
+    const response = await http.post(`cart/${cartId}/add`, payload)
     return response.data
 
 }

@@ -6,6 +6,7 @@ import { PriceFormatter } from "@/app/utils/helpers/helpers";
 import { useEffect } from "react";
 import { nanoid } from "nanoid";
 import {QuantitySelector} from "./";
+import { useCart } from "@/hooks/useCart";
 
 type FormData = {
   quantity: number;
@@ -42,7 +43,8 @@ export default function SimpleProductForm({
 
   const totalPrice = PriceFormatter((quantity || 1) * product.price);
 
-  const { mutate, isSuccess, isError, isPending } = useAddToCart();
+  const { cartId } = useCart();
+  const { mutate, isSuccess, isError, isPending } = useAddToCart({ cartId });
 
   useEffect(() => {
     if (isSuccess) {
@@ -70,7 +72,6 @@ export default function SimpleProductForm({
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col w-full items-center"
     >
-      
       <div className="justify-center">
         <QuantitySelector
           quantity={quantity || 1}

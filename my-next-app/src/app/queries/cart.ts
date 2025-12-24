@@ -1,19 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { addItemToCart, getOneCart } from "../services/cart-services";
+import { Payload } from "../services/cart-services";
 
-export function useAddToCart() {
+export function useAddToCart({ cartId }: { cartId: string }) {
     const queryClient = useQueryClient()
     return useMutation({
-        mutationFn: addItemToCart,
-        onSuccess: (res, variables) => {
-            const { cartId } = variables
+        mutationFn: (payload: Payload) => addItemToCart({ cartId, payload }),
+        onSuccess: (res) => {
             if (cartId) {
                 queryClient.invalidateQueries({ queryKey: ['cart', cartId] })
             }
         },
         onError: (err: any) => {
             const errorMessage = err?.response?.data?.message || err?.message || "An error occurred";
-            console.log(errorMessage)
+            return errorMessage
         }
     })
 }
