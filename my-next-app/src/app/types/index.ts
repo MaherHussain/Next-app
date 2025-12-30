@@ -18,7 +18,7 @@ export interface IngredientsGroup {
     name: string
 }
 export interface CartItem {
-    product: { id: Types.ObjectId, name: string, price: number }
+    product: { id: string, name: string, price: number }
     ingredients?: Record<string, Ingredient[]>,  // Dynamic group names -> arrays of ingredient objects
     quantity: number
 }

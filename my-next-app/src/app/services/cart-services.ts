@@ -21,3 +21,8 @@ export async function getOneCart(cartId: string) {
     const response = await http.get(`/cart/${cartId}`)
     return response.data
 }
+
+export async function deleteItemFromCart(cartId: string, product: CartItem): Promise<{ success: boolean; message: string }> {
+    const response = await http.delete<{ success: boolean; message: string }>(`/cart/${cartId}/remove`, { data: product })
+    return response.data
+}
