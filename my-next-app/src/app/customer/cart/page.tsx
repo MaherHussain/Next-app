@@ -42,12 +42,12 @@ export default function cart() {
         </div>
       )}
       {cartData?.items.length && !isPending && (
-        <div className="flex  flex-col md:flex-row gap-3">
-          <div className="w-full md:w-1/2">
-            <OrderDetails />
-          </div>
-          <div className="w-full md:w-1/2">
+        <div className="flex flex-col md:flex-row gap-3">
+          <div className="w-full md:w-1/2 order-1 md:order-2">
             <OrderOverview items={items} total={cartData?.total} />
+          </div>
+          <div className="w-full md:w-1/2  order-2 md:order-1">
+            <OrderDetails />
           </div>
         </div>
       )}
