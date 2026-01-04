@@ -1,6 +1,6 @@
 "use client";
 import {useEffect, useState} from "react";
-import InputTextField from "@/app/components/shared/input-text-fied";
+import InputTextField from "@/app/components/shared/input-text-field";
 import Button from "@/app/components/shared/Button";
 import { useCreatePartner } from "@/app/queries/auth";
 

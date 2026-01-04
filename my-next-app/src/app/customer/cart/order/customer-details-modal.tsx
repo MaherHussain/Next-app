@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import Modal from "../shared/Modal";
+import Modal from "@/app/components/shared/Modal";
 import { ContactData } from "@/app/types";
-import InputTextField from "../shared/input-text-fied";
+import InputTextField from "@/app/components/shared/input-text-field";
 type Props = {
   onClose: () => void;
   isOpen: boolean;

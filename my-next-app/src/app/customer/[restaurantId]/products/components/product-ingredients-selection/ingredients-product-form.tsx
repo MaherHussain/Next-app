@@ -6,8 +6,7 @@ import { PriceFormatter } from "@/app/utils/helpers/helpers";
 import { useEffect, useMemo, useState } from "react";
 import { useGetIngredientsGroups } from "@/app/queries/ingredients-groups";
 import { useGetAllIngredients } from "@/app/queries/ingredients";
-import { nanoid } from "nanoid";
-import {QuantitySelector} from "./";
+import { QuantitySelector } from "./";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import { useCart } from "@/hooks/useCart";
 
@@ -168,7 +167,7 @@ export default function IngredientsProductForm({
               .map((ingId) =>
                 allIngredientsData.data.find((ing) => ing._id === ingId)
               )
-              .filter(Boolean);
+              .filter(Boolean); //this is same  .filter((item) => item != null)  removes null and undefined
 
             // Only add if there are ingredients after filtering
             if (extraIngredients.length > 0) {
@@ -211,7 +210,7 @@ export default function IngredientsProductForm({
       ingredients: formattedIngredients,
       quantity,
     };
-    mutate( payload );
+    mutate(payload);
     localStorage.setItem("cartId", cartId);
   };
 

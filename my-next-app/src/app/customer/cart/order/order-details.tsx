@@ -10,8 +10,8 @@ import TimeSelectModal from "./time-select-modal";
 import { ContactData } from "@/app/types";
 import { usePlaceOrder } from "@/app/queries/orders";
 import { useCart } from "@/hooks/useCart";
-import DialogModal from "../shared/dialog-modal";
-import LoadingSpinner from "../shared/loading-spinner";
+import DialogModal from "@/app/components/shared/dialog-modal";
+import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import { useGetRestaurant } from "@/app/queries/restaurant";
 
 const sections = [

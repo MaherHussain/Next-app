@@ -1,5 +1,4 @@
 "use client";
-
 import IngredientsSelection from "./ingredients-selection";
 import { useState, useEffect, useRef } from "react";
 import { PriceFormatter } from "@/app/utils/helpers/helpers";
@@ -27,7 +26,6 @@ export default function ProductItem({ product }: { product: Product }) {
     };
   }, [showIngredients]);
 
-  
   return (
     <>
       <div className="bg-white p-4 rounded-md shadow-md">
@@ -48,16 +46,16 @@ export default function ProductItem({ product }: { product: Product }) {
             </button>
           </div>
         </div>
-          <div>
-            {product.ingredients?.map((ingredient) => (
-              <span
-                key={ingredient._id}
-                className="inline-block text-gray-700 px-2 py-1 rounded"
-              >
-                {ingredient.name}
-              </span>
-            ))}
-          </div>
+        <div>
+          {product.ingredients?.map((ingredient) => (
+            <span
+              key={ingredient._id}
+              className="inline-block text-gray-700 px-2 py-1 rounded"
+            >
+              {ingredient.name}
+            </span>
+          ))}
+        </div>
       </div>
       {showIngredients && (
         <IngredientsSelection
