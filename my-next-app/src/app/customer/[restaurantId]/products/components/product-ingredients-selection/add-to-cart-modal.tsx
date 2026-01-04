@@ -2,8 +2,6 @@
 import { ReactNode } from "react";
 import { IoMdClose } from "react-icons/io";
 import { Product } from "@/app/types";
-import { PriceFormatter } from "@/app/utils/helpers/helpers";
-
 interface AddToCartModalProps {
   product: Product;
   onClose: () => void;
@@ -29,7 +27,7 @@ export default function AddToCartModal({
         </button>
         <h1 className="lg:text-3xl md:text-2xl sm:text-xl  font-semibold mb-4">
           {product.name}
-        </h1>{" "}
+        </h1>
         {children}
       </div>
     </div>

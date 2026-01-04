@@ -1,8 +1,8 @@
 "use client";
 import { useGetCartById } from "@/app/queries/cart";
-import OrderOverview, { Item } from "@/app/components/order/order-overview";
+import OrderOverview, { Item } from "./order/order-overview";
 import { useCart } from "@/hooks/useCart";
-import OrderDetails from "@/app/components/order/order-details";
+import OrderDetails from "./order/order-details";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import Link from "next/link";
 

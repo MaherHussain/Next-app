@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Modal from "../shared/Modal";
+import Modal from "@/app/components/shared/Modal";
 import {
   currentTimeRounded,
   generateTimeOptions,

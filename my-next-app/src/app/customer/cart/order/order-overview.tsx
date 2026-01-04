@@ -1,21 +1,21 @@
-import React from "react";
-import { PriceFormatter } from "../../utils/helpers/helpers";
+import { useState } from "react";
+import { PriceFormatter } from '@/app/utils/helpers/helpers';
 import { useDeleteItemFromCart } from "@/app/queries/cart";
 import { useCart } from "@/hooks/useCart";
 import { CartItem, Ingredient } from "@/app/types";
 import { MdDeleteForever } from "react-icons/md";
+import EditCartItemModal from "./edit-cart-item-modal";
+
+interface Props {
+  items: CartItem[];
+  total: number
+}
 export interface Item {
   product: { name: string; id: string; price: number };
   quantity: number;
   ingredients: Record<string, any[]> | undefined;
 }
-export default function OrderOverview({
-  items,
-  total,
-}: {
-  items: CartItem[];
-  total: number;
-}) {
+export default function OrderOverview({ items, total }: Props) {
   function totalAmountOfItem(item: any) {
     const basePrice = item.product.price || 0;
     let ingredientsCost = 0;
@@ -61,7 +61,8 @@ export default function OrderOverview({
             <div key={index} className="border-t py-4 space-y-2 px-2">
               <div className="flex justify-between items-start ">
                 <p className="px-2">{item.quantity} x </p>
-                <div className="w-1/2">
+                <div
+                  className="w-1/2 cursor-pointer">
                   <span className="font-medium">{item.product.name}</span>
                   <div className="mt-2 space-y-1">
                     {removedIngredients &&
