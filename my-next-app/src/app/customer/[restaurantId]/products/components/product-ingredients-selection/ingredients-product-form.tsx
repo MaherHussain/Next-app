@@ -9,7 +9,8 @@ import { useGetAllIngredients } from "@/app/queries/ingredients";
 import { QuantitySelector } from "./";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
 import { useCart } from "@/hooks/useCart";
-
+import { CheckboxInput } from "@/app/components/shared";
+import { DefaultIngredientsSelection } from "@/app/components/shared";
 type FormData = {
   defaultIngredients: string[];
   ingredients: Record<string, string[]>;
@@ -137,15 +138,6 @@ export default function IngredientsProductForm({
     });
   }
 
-  function handleDefaultIngredientToggle(ingredientId: string) {
-    const current = watch("defaultIngredients") || [];
-
-    const isSelected = current.includes(ingredientId);
-    const updated = isSelected
-      ? current.filter((id) => id !== ingredientId)
-      : [...current, ingredientId];
-    setValue("defaultIngredients", updated);
-  }
 
   const onSubmit = (data: FormData) => {
     const { quantity, ingredients, defaultIngredients } = data;
@@ -226,35 +218,13 @@ export default function IngredientsProductForm({
       onSubmit={handleSubmit(onSubmit)}
       className="flex flex-col h-[calc(100%-3rem)]"
     >
-      <div className=" flex flex-row flex-wrap">
-        {product.ingredients &&
-          product.ingredients.map((ing) => {
-            const isChecked = defaultIngredients.includes(ing._id);
+      <DefaultIngredientsSelection 
+        product={product} 
+        onIngredientsChange={(selectedIngredients: string[]) => {
+          setValue("defaultIngredients", selectedIngredients);
+        }}
+      />
 
-            return (
-              <label
-                key={ing._id}
-                className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-              >
-                <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={() => {
-                    handleDefaultIngredientToggle(ing._id);
-                  }}
-                  className="appearance-none w-4 h-4 rounded-full border-2 border-gray-300 checked:bg-orange-500 checked:border-orange-500 relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-2 checked:after:h-2 checked:after:bg-white checked:after:rounded-full accent-orange-500"
-                />
-                <span
-                  className={`text-gray-700 text-sm ${
-                    isChecked ? "" : "line-through"
-                  }`}
-                >
-                  {ing.name}
-                </span>
-              </label>
-            );
-          })}
-      </div>
       <div className="flex flex-row px-4 flex-wrap md:gap-6">
         {ingredientsGroupData?.data.map((group) => (
           <div key={group._id} className="mb-5">
@@ -264,23 +234,13 @@ export default function IngredientsProductForm({
                 item._id
               );
               return (
-                <label
+                <CheckboxInput
                   key={item._id}
-                  className="flex items-center capitalize gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => handleIngredientToggle(group._id, item._id)}
-                    className="appearance-none w-4 h-4 rounded-full border-2 border-gray-300 checked:bg-orange-500 checked:border-orange-500 relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-2 checked:after:h-2 checked:after:bg-white checked:after:rounded-full accent-orange-500"
-                  />
-                  <span className={`text-gray-700  text-sm `}>
-                    {item.name}
-                    <span className="text-green-500">
-                      {item.cost != 0 ? PriceFormatter(item.cost) : ""}
-                    </span>
-                  </span>
-                </label>
+                  label={item.name}
+                  cost={item.cost}
+                  onChange={() => handleIngredientToggle(group._id, item._id)}
+                  isChecked={isChecked}
+                />
               );
             })}
           </div>
@@ -306,31 +266,18 @@ export default function IngredientsProductForm({
                   ingredient._id
                 );
                 return (
-                  <label
+                  <CheckboxInput
                     key={ingredient._id}
-                    className="flex items-center capitalize gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded"
-                  >
-                    <input
-                      type="checkbox"
-                      value={ingredient._id}
-                      checked={isChecked}
-                      onChange={() =>
-                        handleIngredientToggle(
-                          "extra-ingredients",
-                          ingredient._id
-                        )
-                      }
-                      className="appearance-none w-4 h-4 rounded-full border-2 border-gray-300 checked:bg-orange-500 checked:border-orange-500 relative checked:after:content-[''] checked:after:absolute checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 checked:after:-translate-y-1/2 checked:after:w-2 checked:after:h-2 checked:after:bg-white checked:after:rounded-full accent-orange-500"
-                    />
-                    <span className={`text-gray-700 text-sm`}>
-                      {ingredient.name}
-                      <span className="text-green-500 ml-2">
-                        {ingredient.cost !== 0
-                          ? PriceFormatter(ingredient.cost)
-                          : ""}
-                      </span>
-                    </span>
-                  </label>
+                    isChecked={isChecked}
+                    onChange={() =>
+                      handleIngredientToggle(
+                        "extra-ingredients",
+                        ingredient._id
+                      )
+                    }
+                    cost={ingredient.cost}
+                    label={ingredient.name}
+                  />
                 );
               })
             ) : (

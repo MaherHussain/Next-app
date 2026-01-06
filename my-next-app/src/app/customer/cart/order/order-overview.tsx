@@ -4,11 +4,9 @@ import { useDeleteItemFromCart } from "@/app/queries/cart";
 import { useCart } from "@/hooks/useCart";
 import { CartItem, Ingredient } from "@/app/types";
 import { MdDeleteForever } from "react-icons/md";
-import EditCartItemModal from "./edit-cart-item-modal";
-
 interface Props {
   items: CartItem[];
-  total: number
+  total: number;
 }
 export interface Item {
   product: { name: string; id: string; price: number };
@@ -61,8 +59,7 @@ export default function OrderOverview({ items, total }: Props) {
             <div key={index} className="border-t py-4 space-y-2 px-2">
               <div className="flex justify-between items-start ">
                 <p className="px-2">{item.quantity} x </p>
-                <div
-                  className="w-1/2 cursor-pointer">
+                <div className="w-1/2 cursor-pointer">
                   <span className="font-medium">{item.product.name}</span>
                   <div className="mt-2 space-y-1">
                     {removedIngredients &&
@@ -77,7 +74,7 @@ export default function OrderOverview({ items, total }: Props) {
                   </div>
 
                   {ingredientGroups &&
-                    ingredientGroups.map(([group, ingredients]) => {
+                    ingredientGroups.map(([group, ingredients], index) => {
                       return (
                         <div key={index} className="mt-3 space-y-1">
                           <div className="font-semibold text-gray-600 capitalize">
