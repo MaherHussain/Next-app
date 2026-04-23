@@ -4,7 +4,7 @@ import Modal from '@/app/components/shared/Modal';
 import { getOneOrder } from '@/app/queries/orders';
 import LoadingSpinner from '@/app/components/shared/loading-spinner';
 import { PriceFormatter, dateFormatter } from '@/app/utils/helpers/helpers';
-import { IOrder } from '@/lib/models/Order';
+import { IOrder } from '@/lib/models/order';
 
 interface OrderDetailsModalProps {
   isOpen: boolean;

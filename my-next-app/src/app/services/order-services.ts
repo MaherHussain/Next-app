@@ -8,7 +8,7 @@ interface Payload {
     selectedTime: string
     orderMethod: string
     paymentMethod: string
-    restaurantId?: string // add restaurantId as optional
+    restaurantId?: string
 }
 
 interface OrderResponse {
@@ -36,14 +36,14 @@ export async function getOrderById(orderId: string): Promise<OrderResponse> {
     const response = await http.get(`orders/${orderId}`)
     return response.data
 }
-export async function placeOrder(payload: Payload): Promise<OrderResponse> {
-    const response = await http.post('order/place-order', payload)
-    return response.data
 
+export async function placeOrder(payload: Payload): Promise<OrderResponse> {
+    const response = await http.post('orders', payload)
+    return response.data
 }
 
 export async function acceptOrder(payload: AcceptOrderPayload) {
-    const response = await http.patch('order/accept', payload)
+    const { orderId, estimatedTime } = payload;
+    const response = await http.patch(`orders/${orderId}`, { estimatedTime, status: 'confirmed' })
     return response.data
-
 }

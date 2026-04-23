@@ -1,5 +1,5 @@
 import { Schema, model, models, Document, Types } from "mongoose";
-import { itemSchema } from "./Cart";
+import { itemSchema } from "./cart";
 import { ContactData, CartItem } from "@/app/types";
 
 export interface IOrder extends Document {

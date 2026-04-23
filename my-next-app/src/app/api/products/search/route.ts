@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Product from "@/lib/models/Product";
-import Ingredient from '@/lib/models/Ingredient';
+import Product from "@/lib/models/product";
+import Ingredient from '@/lib/models/ingredient';
 
 void Ingredient;
 

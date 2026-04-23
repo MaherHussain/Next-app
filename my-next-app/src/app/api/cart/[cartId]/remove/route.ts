@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Cart, { ICart } from '@/lib/models/Cart';
+import Cart, { ICart } from '@/lib/models/cart';
 import { CartItem } from '@/app/types';
 import { ingredientsMatch } from '@/app/utils/cart-utils';
 

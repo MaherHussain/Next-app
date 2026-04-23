@@ -1,13 +1,12 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import IngredientGroup from '@/lib/models/IngredientsGroup';
+import IngredientGroup from '@/lib/models/ingredients-group';
 
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     await dbConnect();
     try {
-        const req = arguments[0] as NextRequest | undefined;
-        const url = req ? new URL(req.url) : undefined;
+        const url = new URL(req.url);
 
         const restaurantId = url?.searchParams.get("restaurantId");
         const ingredientsGroup = await IngredientGroup.find({ restaurantId }).populate({ path: "ingredients", select: "name cost" });

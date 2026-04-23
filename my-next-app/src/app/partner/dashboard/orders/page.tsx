@@ -1,7 +1,7 @@
 "use client";
 import { useUser } from "@/app/utils/providers/UserContext";
 import LoadingSpinner from "@/app/components/shared/loading-spinner";
-import Order from "@/lib/models/Order";
+import Order from "@/lib/models/order";
 import { OrderList } from "./components";
 
 export default function PartnerOrders() {

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
-import Restaurant from "@/lib/models/Restaurant";
+import Restaurant from "@/lib/models/restaurant";
 import { jwtVerify } from "jose";
 
 export async function GET(req: NextRequest) {

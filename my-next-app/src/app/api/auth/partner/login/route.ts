@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Partner from '@/lib/models/Partner';
+import Partner from '@/lib/models/partner';
 import bcrypt from 'bcrypt';
 import { LoginFormSchema } from '@/lib/validations/login-validation';
 import { SignJWT } from 'jose';

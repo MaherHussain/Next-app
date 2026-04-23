@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Partner from '@/lib/models/Partner';
-import Restaurant from '@/lib/models/Restaurant';
+import Partner from '@/lib/models/partner';
+import Restaurant from '@/lib/models/restaurant';
 import bcrypt from 'bcrypt';
 import { RegisterFormSchema } from '@/lib/validations/register-validation';
 import { SignJWT } from 'jose';
@@ -59,6 +59,9 @@ export async function POST(req: NextRequest) {
             password: hashedPassword,
             restaurantId: restaurant._id
         })
+
+        // Link partner to restaurant (one-to-many support)
+        await Restaurant.findByIdAndUpdate(restaurant._id, { partnerId: partner._id })
 
         // Create JWT token for auto-login
         const token = await new SignJWT({
