@@ -1,12 +1,11 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Ingredient from '@/lib/models/Ingredient'; '@/lib/models/Ingredient';
+import Ingredient from '@/lib/models/ingredient';
 
-export async function GET () {
+export async function GET(req: NextRequest) {
     await dbConnect();
     try {
-        const req = arguments[0] as NextRequest | undefined;
-        const url = req ? new URL(req.url) : undefined;
+        const url = new URL(req.url);
 
         const pageParam = url?.searchParams.get('page') ?? '1';
         const limitParam = url?.searchParams.get('limit') ?? '10';

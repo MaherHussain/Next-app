@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Cart from '@/lib/models/Cart';
+import Cart from '@/lib/models/cart';
 
 export async function GET(req: NextRequest,
     { params }: { params: Promise<{ cartId: string }> }) {

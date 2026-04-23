@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import Partner from '@/lib/models/Partner';
-import Restaurant from '@/lib/models/Restaurant';
+import Partner from '@/lib/models/partner';
+import Restaurant from '@/lib/models/restaurant';
 import dbConnect from "@/lib/mongodb";
 import { jwtVerify } from "jose";
 

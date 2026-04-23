@@ -1,17 +1,15 @@
 import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from "@/lib/mongodb";
-import Product from "@/lib/models/Product";
-import Ingredient from '@/lib/models/Ingredient';
+import Product from "@/lib/models/product";
+import Ingredient from '@/lib/models/ingredient';
 
 
 void Ingredient; // Ensure Ingredient model is included for population
 
-export async function GET() {
+export async function GET(req: NextRequest) {
     await dbConnect();
     try {
-        // `GET` may be called with a Request argument by Next.js — read it from arguments[0]
-        const req = arguments[0] as NextRequest | undefined;
-        const url = req ? new URL(req.url) : undefined;
+        const url = new URL(req.url);
 
         const pageParam = url?.searchParams.get('page') ?? '1';
         const limitParam = url?.searchParams.get('limit') ?? '10';

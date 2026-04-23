@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addIngredientGroup, deleteIngredientGroup, editIngredientGroup, getIngredientGroups } from "../services/ingredients-group-services";
+import { addIngredientGroup, deleteIngredientGroup, editIngredientGroup, getIngredientGroups } from "../services/ingredient-group-services";
 
 export function useGetIngredientsGroups({ restaurantId }: { restaurantId: string }) {
     return useQuery({

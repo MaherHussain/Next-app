@@ -1,9 +1,9 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 export interface  IIngredient extends Document {
     name:string
     cost?: number 
-    restaurantId: { type: Schema.Types.ObjectId, ref: 'Restaurant', required: true, index: true },
+    restaurantId: mongoose.Types.ObjectId,
 }
 
 const IngredientSchema :Schema<IIngredient> = new Schema ({

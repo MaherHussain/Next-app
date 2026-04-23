@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Document, Model, Types } from "mongoose";
 
 // this model called restaurant is to manage the data of shop/store
 // each partner could have one or more restaurants
@@ -15,10 +15,10 @@ interface IRestaurant extends Document {
         sunday: { start: string, end: string } | null // null because could be closed
     },
     cvrNumber?: number,
-
+    partnerId?: Types.ObjectId,
 }
 
-const RestaurantSchema: Schema<IRestaurant> = new Schema({
+const RestaurantSchema = new Schema<IRestaurant>({
     name: { type: String, unique: true, required: true },
     address: { type: String, unique: true },
     openHours: {
@@ -30,7 +30,8 @@ const RestaurantSchema: Schema<IRestaurant> = new Schema({
         saturday: { start: { type: String }, end: { type: String } },
         sunday: { start: { type: String }, end: { type: String } },
     },
-    cvrNumber: { type: Number }
+    cvrNumber: { type: Number },
+    partnerId: { type: Schema.Types.ObjectId, ref: 'Partner' },
 }, { timestamps: true })
 
 export default (mongoose.models.Restaurant as Model<IRestaurant>) ||
