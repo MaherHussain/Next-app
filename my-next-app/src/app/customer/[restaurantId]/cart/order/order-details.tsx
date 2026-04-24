@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { IoMdContact } from "react-icons/io";
 import { MdOutlineEdit } from "react-icons/md";
 import { TbHandClick } from "react-icons/tb";
@@ -114,8 +115,9 @@ function OrderDetails() {
       };
     });
   }
+  const params = useParams();
+  const restaurantId = params.restaurantId as string;
   function onPlaceOrder() {
-    const restaurantId = restaurantData?.data?._id;
     const payload = {
       items: items,
       contactData: pickupData.contactData,
