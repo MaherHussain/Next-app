@@ -10,10 +10,10 @@ export default function Home() {
         <main className=" h-full grid grid-cols-1 md:grid-cols-2 gap-10 p-8 rounded-2xl">
           <div className="flex flex-col items-center justify-center gap-6">
             <Link
-              className="w-40 text-center px-10 py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              href={`/customer/${restaurantId}/products`}
+              className="w-56 text-center px-10 py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              href={`/customer/${restaurantId}`}
             >
-              order food from zaza's pita
+              Order Online (zaza's pita)
             </Link>
             <Link
               className="w-40 text-center px-10 py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
