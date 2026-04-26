@@ -19,3 +19,8 @@ export const getRestaurant = async (): Promise<RestaurantResponse> => {
     return response.data;
 };
 
+export const getRestaurantById = async (id: string): Promise<RestaurantResponse> => {
+    const response = await http.get(`/restaurant/${id}`);
+    return response.data;
+};
+

@@ -19,6 +19,7 @@ export default function Sidebar({ restaurantName }: SidebarProps) {
     { name: "Overview", href: "/partner/dashboard/overview", icon: AiOutlineHome },
     { name: "Orders", href: "/partner/dashboard/orders", icon: AiOutlineFileText },
     { name: "Products", href: "/partner/dashboard/products", icon: AiOutlineShopping },
+    { name: "Integration", href: "/partner/dashboard/integration", icon: AiOutlineFileText },
     { name: "Profile", href: "/partner/dashboard/profile", icon: AiOutlineUser },
   ];
 
