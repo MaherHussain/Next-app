@@ -16,7 +16,7 @@ app.use(express.json());
 // Attach Socket.IO to the HTTP server
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(',') : '*',
     methods: ['GET', 'POST'],
   },
 });
@@ -49,6 +49,7 @@ app.post('/notify-new-order', (req, res) => {
   res.json({ success: true });
 });
 
-server.listen(4000, () => {
-  console.log('Socket.IO server running on port 4000');
+const PORT = process.env.SOCKET_SERVER_PORT || 4000;
+server.listen(PORT, () => {
+  console.log(`Socket.IO server running on port ${PORT}`);
 });
