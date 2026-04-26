@@ -20,6 +20,7 @@ interface Product {
   name: string;
   price: number;
   createdAt?: string;
+  active?: boolean;
   ingredients?: Ingredient[];
 }
 

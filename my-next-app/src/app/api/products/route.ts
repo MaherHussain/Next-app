@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
         }
         /* filtering by restaurantID and active only products . 
         because we use this endpoint for both customer and partner 
-        will add activeOnly params to customer product page to render products    */
+        will add activeOnly params to customer product page to render products */
         const filter: any = { restaurantId }
         if (activeOnly) {
             filter.active = true
