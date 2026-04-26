@@ -64,7 +64,8 @@ export async function POST(req: NextRequest) {
 
         // Notify the Socket.IO server
         try {
-            await axios.post('http://localhost:4000/notify-new-order', {
+            const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+            await axios.post(`${socketUrl}/notify-new-order`, {
                 restaurantId,
                 order: newOrder,
             });
