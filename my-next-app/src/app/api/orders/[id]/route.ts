@@ -42,6 +42,23 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
             return NextResponse.json({ message: 'Order not found' }, { status: 404 });
         }
 
+        // Notify socket server about the status update
+        try {
+            const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000';
+            await fetch(`${socketUrl}/notify-order-status-update`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderId: id,
+                    status: order.status,
+                    estimatedTime: order.estimatedTime
+                }),
+            });
+        } catch (socketError) {
+            console.error('[SOCKET_NOTIFY_ERROR]', socketError);
+            // Don't fail the response if socket notification fails
+        }
+
         return NextResponse.json({ message: 'Order updated', data: order });
     } catch (error) {
         console.error('[UPDATE_ORDER_ERROR]', error);

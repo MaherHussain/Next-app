@@ -16,27 +16,9 @@ export interface Item {
 export default function OrderOverview({ items, total }: Props) {
   function totalAmountOfItem(item: any) {
     const basePrice = item.product.price || 0;
-    let ingredientsCost = 0;
-
-    // Calculate total cost of ingredients
-    if (item.ingredients) {
-      Object.values(item.ingredients).forEach((ingredientArray: any) => {
-        if (Array.isArray(ingredientArray)) {
-          ingredientArray.forEach((ingredient: any) => {
-            if (
-              typeof ingredient === "object" &&
-              ingredient !== null &&
-              ingredient.cost
-            ) {
-              ingredientsCost += ingredient.cost || 0;
-            }
-          });
-        }
-      });
-    }
-
     return basePrice * item.quantity;
   }
+
   const { cartId } = useCart();
 
   const { mutate: RemoveItem } = useDeleteItemFromCart(cartId);

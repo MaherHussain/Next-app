@@ -101,15 +101,17 @@ export default function IngredientsProductForm({
     return totalCost;
   }, [ingredientsGroupData?.data, allIngredientsData?.data, ingredients]);
 
-  // Calculate total price: (product price + selected ingredients cost) * quantity
-  const totalPrice = useMemo(() => {
+  const unitPrice = useMemo(() => {
     const basePrice = product.price || 0;
     const ingredientsCost = selectedIngredientsCost || 0;
-    const totalPerItem = basePrice + ingredientsCost;
-    const quantityValue = quantity || 1;
+    return basePrice + ingredientsCost;
+  }, [product.price, selectedIngredientsCost]);
 
-    return totalPerItem * quantityValue;
-  }, [product.price, selectedIngredientsCost, quantity]);
+  // Calculate total price for UI button
+  const totalPrice = useMemo(() => {
+    const quantityValue = quantity || 1;
+    return unitPrice * quantityValue;
+  }, [unitPrice, quantity]);
   const { cartId } = useCart();
   const { mutate, isSuccess, isError, isPending } = useAddToCart({ cartId });
   const [isExtraIngredientsExpanded, setIsExtraIngredientsExpanded] =
@@ -198,7 +200,7 @@ export default function IngredientsProductForm({
     }
 
     const payload = {
-      product: { name: product.name, id: product._id, price: totalPrice },
+      product: { name: product.name, id: product._id, price: unitPrice },
       ingredients: formattedIngredients,
       quantity,
     };

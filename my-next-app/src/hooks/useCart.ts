@@ -24,5 +24,10 @@ export const useCart = () => {
 
     }, []);
 
-    return { cartId, items, total };
+    const clearCart = () => {
+        localStorage.removeItem('cartId');
+        setCartId(nanoid());
+    };
+
+    return { cartId, items, total, clearCart };
 };

@@ -23,6 +23,9 @@ interface NotificationContextType {
   soundEnabled: boolean;
   toggleSound: () => void;
   stopNotificationSound: () => void;
+  dismissNotification: (orderId: string) => void;
+  clearAllNotifications: () => void;
+  testSound: () => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -66,15 +69,24 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
     startNotificationSound();
   };
 
+  const dismissNotification = (orderId: string) => {
+    setNotifications((prev) => prev.filter((n) => n._id !== orderId));
+  };
+
+  const clearAllNotifications = () => {
+    setNotifications([]);
+  };
+
   const toggleSound = () => {
-    setSoundEnabled(prev => !prev);
-    if (soundEnabled && audioRef.current) {
+    const newState = !soundEnabled;
+    setSoundEnabled(newState);
+    if (!newState && audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
     }
   };
 
-  // Stop sound when all notifications are accepted/rejected
+  // Stop sound when all notifications are dismissed
   useEffect(() => {
     if (notifications.length === 0) {
       stopNotificationSound();
@@ -84,34 +96,45 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (!socket) return;
     if (user?.restaurantId) {
-      socket.emit('join-room', user.restaurantId);
+      const restaurantId = typeof user.restaurantId === 'string'
+        ? user.restaurantId
+        : user.restaurantId._id;
+
+      socket.emit('join-room', restaurantId);
+
+      socket.on('new-order', (data: { order: NotificationOrder }) => {
+        if (data && data.order) {
+          addNotification(data.order);
+        }
+      });
     }
-    socket.on('new-order', (data: { order: NotificationOrder }) => {
-      if (data && data.order) {
-        addNotification(data.order);
-      }
-    });
+
     return () => {
       socket.off('new-order');
     };
   }, [socket, user?.restaurantId]);
 
+  const testSound = () => {
+    // Play sound temporarily (won't loop)
+    const testAudio = new window.Audio('/sounds/notification.mp3');
+    testAudio.play().catch((err) => {
+      console.warn("Audio play blocked. User interaction required:", err);
+      alert("Audio play was blocked by your browser. Please click anywhere on the page and try again.");
+    });
+  };
+
   return (
-    <NotificationContext.Provider value={{ notifications, addNotification, soundEnabled, toggleSound, stopNotificationSound }}>
+    <NotificationContext.Provider value={{
+      notifications,
+      addNotification,
+      soundEnabled,
+      toggleSound,
+      stopNotificationSound,
+      dismissNotification,
+      clearAllNotifications,
+      testSound
+    }}>
       {children}
     </NotificationContext.Provider>
   );
 };
-
-// Export stopNotificationSound for use in NotificationList
-export const useNotificationSoundControl = () => {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  return {
-    stop: () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.currentTime = 0;
-      }
-    }
-  };
-}; 
