@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useNotification } from "./NotificationContext";
 import { useAcceptOrder } from "@/app/queries/orders";
-
-// Add this import
 import { useRef } from "react";
-import { PriceFormatter } from "@/app/utils/helpers/helpers";
+import { PriceFormatter, calculateFinalPickupTime } from "@/app/utils/helpers/helpers";
 
 const NotificationList: React.FC = () => {
-  const { notifications, soundEnabled, toggleSound, stopNotificationSound } =
-    useNotification();
+  const {
+    notifications,
+    soundEnabled,
+    toggleSound,
+    stopNotificationSound,
+    dismissNotification,
+    clearAllNotifications,
+    testSound
+  } = useNotification();
   const [loadingOrderId, setLoadingOrderId] = useState<string | null>(null);
   const [estimateTimes, setEstimateTimes] = useState<{
     [orderId: string]: string;
@@ -16,24 +21,25 @@ const NotificationList: React.FC = () => {
   const [acceptedOrders, setAcceptedOrders] = useState<{
     [orderId: string]: boolean;
   }>({});
-  const { mutate, isSuccess } = useAcceptOrder();
-  // Access the audio element in NotificationContext
-  const audioRef = (window as any).notificationAudioRef;
+  const { mutateAsync } = useAcceptOrder();
 
   const handleAccept = async (orderId: string) => {
     const estimatedTime = estimateTimes[orderId];
     if (!estimatedTime) return;
     setLoadingOrderId(orderId);
 
-    mutate({
-      orderId,
-      estimatedTime,
-    });
-    if (isSuccess) {
+    try {
+      await mutateAsync({
+        orderId,
+        estimatedTime,
+      });
       setAcceptedOrders((prev) => ({ ...prev, [orderId]: true }));
       stopNotificationSound(); // Stop sound immediately on accept
+    } catch (error) {
+      console.error("Failed to accept order:", error);
+    } finally {
+      setLoadingOrderId(null);
     }
-    setLoadingOrderId(null);
   };
 
   if (notifications.length === 0) return null;
@@ -87,9 +93,22 @@ const NotificationList: React.FC = () => {
                   </svg>
                 )}
               </button>
-              <div className="bg-white bg-opacity-20 rounded-full px-3 py-1 text-sm font-semibold">
-                {notifications.length}
-              </div>
+              <button
+                onClick={testSound}
+                className="bg-white bg-opacity-20 rounded-full p-2 hover:bg-opacity-30 transition-all ml-1"
+                title="Test notification sound"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+              <button
+                onClick={clearAllNotifications}
+                className="bg-white bg-opacity-20 rounded-full px-3 py-1 text-sm font-semibold hover:bg-opacity-30 transition-all"
+              >
+                Clear All
+              </button>
             </div>
           </div>
         </div>
@@ -106,18 +125,8 @@ const NotificationList: React.FC = () => {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div className="bg-orange-100 text-orange-600 rounded-full p-2">
-                      <svg
-                        className="w-5 h-5"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
                     <div>
@@ -125,16 +134,35 @@ const NotificationList: React.FC = () => {
                         Order #{order.orderNumber}
                       </h3>
                       <p className="text-sm text-gray-600">
-                        Total:{PriceFormatter(order.total)}
+                        Total: {typeof order.total === 'number' ? PriceFormatter(order.total) : JSON.stringify(order.total)}
                       </p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-sm text-gray-500 capitalize">
-                      {order.orderMethod}
-                    </div>
+
+                  {/* Highlight Requested/Accepted Pickup Time */}
+                  <div className={`text-white px-4 py-2 rounded-lg flex flex-col items-center shadow-sm ${acceptedOrders[order._id] ? 'bg-green-600' : 'bg-blue-600'}`}>
+                    <span className="text-[10px] uppercase font-bold tracking-wider opacity-80">
+                      {acceptedOrders[order._id] ? 'Pickup Time' : 'Requested Pickup'}
+                    </span>
+                    <span className="text-xl font-black leading-tight">
+                      {acceptedOrders[order._id]
+                        ? calculateFinalPickupTime(order.selectedTime, estimateTimes[order._id], order.createdAt)
+                        : (typeof order.selectedTime === 'object' ? 'ASAP' : (order.selectedTime || 'ASAP'))
+                      }
+                    </span>
+                  </div>
+
+                  <div className="text-right flex flex-col items-end gap-2">
+                    <button
+                      onClick={() => dismissNotification(order._id)}
+                      className="text-gray-400 hover:text-gray-600 transition-colors"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                     <div className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
-                      {order.status}
+                      {typeof order.status === 'object' ? JSON.stringify(order.status) : order.status}
                     </div>
                   </div>
                 </div>
@@ -167,7 +195,7 @@ const NotificationList: React.FC = () => {
                             Name:
                           </span>
                           <span className="ml-2 text-gray-600">
-                            {order.contactData?.name}
+                            {typeof order.contactData?.name === 'object' ? JSON.stringify(order.contactData.name) : order.contactData?.name}
                           </span>
                         </div>
                         <div>
@@ -175,7 +203,7 @@ const NotificationList: React.FC = () => {
                             Phone:
                           </span>
                           <span className="ml-2 text-gray-600">
-                            {order.contactData?.phone}
+                            {typeof order.contactData?.phone === 'object' ? JSON.stringify(order.contactData.phone) : order.contactData?.phone}
                           </span>
                         </div>
                         <div>
@@ -183,7 +211,7 @@ const NotificationList: React.FC = () => {
                             Email:
                           </span>
                           <span className="ml-2 text-gray-600">
-                            {order.contactData?.email}
+                            {typeof order.contactData?.email === 'object' ? JSON.stringify(order.contactData.email) : order.contactData?.email}
                           </span>
                         </div>
                         {order.contactData?.address && (
@@ -223,7 +251,7 @@ const NotificationList: React.FC = () => {
                             Time:
                           </span>
                           <span className="ml-2 text-gray-600">
-                            {order.selectedTime}
+                            {typeof order.selectedTime === 'object' ? JSON.stringify(order.selectedTime) : order.selectedTime}
                           </span>
                         </div>
                         <div>
@@ -231,7 +259,7 @@ const NotificationList: React.FC = () => {
                             Payment:
                           </span>
                           <span className="ml-2 text-gray-600 capitalize">
-                            {order.paymentMethod}
+                            {typeof order.paymentMethod === 'object' ? JSON.stringify(order.paymentMethod) : order.paymentMethod}
                           </span>
                         </div>
                         <div>
@@ -239,7 +267,7 @@ const NotificationList: React.FC = () => {
                             Method:
                           </span>
                           <span className="ml-2 text-gray-600 capitalize">
-                            {order.orderMethod}
+                            {typeof order.orderMethod === 'object' ? JSON.stringify(order.orderMethod) : order.orderMethod}
                           </span>
                         </div>
                       </div>
@@ -273,12 +301,12 @@ const NotificationList: React.FC = () => {
                           >
                             <div className="text-left">
                               <span className="font-semibold text-gray-800">
-                                x{item.quantity}
+                                x{typeof item.quantity === 'object' ? JSON.stringify(item.quantity) : item.quantity}
                               </span>
                             </div>
                             <div className="">
                               <span className="font-medium text-gray-800">
-                                {item.product.name}
+                                {typeof item.product?.name === 'object' ? JSON.stringify(item.product.name) : (item.product?.name || 'Unknown Product')}
                               </span>
                               {item.ingredients && (
                                 <div className="text-xs text-gray-500 mt-1">
@@ -287,9 +315,13 @@ const NotificationList: React.FC = () => {
                                       values &&
                                       Array.isArray(values) &&
                                       values.length > 0 ? (
-                                        <span key={key} className="mr-2 block">
-                                          {key}: {values.join(", ")}
-                                        </span>
+                                          <span key={key} className="mr-2 block text-gray-600">
+                                            {key}: {values.map((v: any) => {
+                                              if (typeof v === 'string') return v;
+                                              if (v && typeof v === 'object' && v.name) return v.name;
+                                              return JSON.stringify(v);
+                                            }).join(", ")}
+                                          </span>
                                       ) : null
                                   )}
                                 </div>
@@ -329,10 +361,8 @@ const NotificationList: React.FC = () => {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3">
-                    <input
-                      type="text"
-                      placeholder="Estimated time (e.g. 30 min)"
-                      className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+                      <select
+                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
                       value={estimateTimes[order._id] || ""}
                       onChange={(e) =>
                         setEstimateTimes({
@@ -341,7 +371,18 @@ const NotificationList: React.FC = () => {
                         })
                       }
                       disabled={loadingOrderId === order._id}
-                    />
+                      >
+                        <option value="">Select estimation time...</option>
+                        <option value="10 min">10 min</option>
+                        <option value="15 min">15 min</option>
+                        <option value="20 min">20 min</option>
+                        <option value="25 min">25 min</option>
+                        <option value="30 min">30 min</option>
+                        <option value="40 min">40 min</option>
+                        <option value="50 min">50 min</option>
+                        <option value="1 hour">1 hour</option>
+                        <option value="ASAP">ASAP (Ready Now)</option>
+                      </select>
                     <button
                       className="bg-gradient-to-r from-orange-500 to-red-600 text-white px-6 py-2 rounded-lg text-sm font-semibold disabled:opacity-50 hover:from-orange-600 hover:to-red-700 transition-all duration-200"
                       onClick={() => handleAccept(order._id)}
@@ -356,10 +397,11 @@ const NotificationList: React.FC = () => {
                           Accepting...
                         </div>
                       ) : (
-                        "Accept"
+                            "Accept Order"
                       )}
                     </button>
                   </div>
+
                 )}
               </div>
             ))}

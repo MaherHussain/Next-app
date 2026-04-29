@@ -53,8 +53,6 @@ export function currentTimeRounded() {
     return `${hours}:${minutes}`;
 }
 export function dateFormatter(iso: string) {
-
-
     const date = new Date(iso);
     const pad = (n: number) => n.toString().padStart(2, "0");
     const day = pad(date.getDate());
@@ -63,4 +61,23 @@ export function dateFormatter(iso: string) {
     const hours = pad(date.getHours());
     const minutes = pad(date.getMinutes());
     return `${day}-${month}-${year} ${hours}:${minutes}`;
+}
+
+export function calculateFinalPickupTime(requestedTime: string, estimatedTime: string, createdAt?: string) {
+    if (!estimatedTime || estimatedTime === 'ASAP') return requestedTime || 'ASAP';
+
+    const estimateMinutes = parseInt(estimatedTime) || 0;
+    let baseTime = new Date();
+
+    if (requestedTime && requestedTime !== 'ASAP' && requestedTime !== 'custom time' && requestedTime.includes(':')) {
+        const [hours, minutes] = requestedTime.split(':').map(Number);
+        if (!isNaN(hours) && !isNaN(minutes)) {
+            baseTime.setHours(hours, minutes, 0, 0);
+        }
+    } else if (createdAt) {
+        baseTime = new Date(createdAt);
+    }
+
+    baseTime.setMinutes(baseTime.getMinutes() + estimateMinutes);
+    return baseTime.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
 }

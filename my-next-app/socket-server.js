@@ -23,29 +23,41 @@ const io = new Server(server, {
 
 // Socket.IO logic
 io.on('connection', (socket) => {
-  console.log('A partner connected:', socket.id);
 
   socket.on('join-room', (restaurantId) => {
     socket.join(restaurantId);
-    console.log(`Socket ${socket.id} joined room ${restaurantId}`);
+  });
+
+  socket.on('join-order', (orderId) => {
+    socket.join(orderId);
   });
 
   socket.on('disconnect', () => {
-    console.log('Partner disconnected:', socket.id);
+    // Client disconnected
   });
 });
 
 app.post('/notify-new-order', (req, res) => {
   const { restaurantId, order } = req.body;
-  console.log('Received notification request for restaurant:', restaurantId);
   
   if (!restaurantId || !order) {
-    console.log('Missing restaurantId or order');
     return res.status(400).json({ error: 'restaurantId and order are required' });
   }
   
-  console.log('Emitting new-order to room:', restaurantId);
   io.to(restaurantId).emit('new-order', { order });
+  res.json({ success: true });
+});
+
+app.post('/notify-order-status-update', (req, res) => {
+  const { orderId, status, estimatedTime } = req.body;
+
+  if (!orderId || !status) {
+    return res.status(400).json({ error: 'orderId and status are required' });
+  }
+
+  // Notify the customer in the specific order room
+  io.to(orderId).emit('order-status-updated', { orderId, status, estimatedTime });
+  
   res.json({ success: true });
 });
 
