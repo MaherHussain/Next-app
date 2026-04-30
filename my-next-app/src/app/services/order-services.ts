@@ -47,3 +47,19 @@ export async function acceptOrder(payload: AcceptOrderPayload) {
     const response = await http.patch(`orders/${orderId}`, { estimatedTime, status: 'confirmed' })
     return response.data
 }
+
+interface RejectOrderPayload {
+    orderId: string
+    rejectionReason?: string
+}
+
+export async function rejectOrder(payload: RejectOrderPayload) {
+    const { orderId, rejectionReason } = payload;
+    const response = await http.patch(`orders/${orderId}`, { status: 'rejected', rejectionReason })
+    return response.data
+}
+
+export async function markOrderReady(orderId: string) {
+    const response = await http.patch(`orders/${orderId}`, { status: 'ready' })
+    return response.data
+}

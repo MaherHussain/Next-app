@@ -16,7 +16,7 @@ export default function Sidebar({ restaurantName }: SidebarProps) {
   const pathname = usePathname();
 
   const navigation = [
-    { name: "Overview", href: "/partner/dashboard/overview", icon: AiOutlineHome },
+    { name: "Live Orders", href: "/partner/dashboard/overview", icon: AiOutlineHome },
     { name: "Orders", href: "/partner/dashboard/orders", icon: AiOutlineFileText },
     { name: "Products", href: "/partner/dashboard/products", icon: AiOutlineShopping },
     { name: "Integration", href: "/partner/dashboard/integration", icon: AiOutlineFileText },

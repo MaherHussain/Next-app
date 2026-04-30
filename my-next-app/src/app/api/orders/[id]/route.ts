@@ -26,15 +26,17 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     await dbConnect();
     try {
         const { id } = await params;
-        const { status, estimatedTime } = await request.json();
+        const { status, estimatedTime, rejectionReason } = await request.json();
 
         const updateData: any = {};
         if (status) updateData.status = status;
         if (estimatedTime) updateData.estimatedTime = estimatedTime;
+        if (rejectionReason !== undefined) updateData.rejectionReason = rejectionReason;
 
         if (Object.keys(updateData).length === 0) {
             return NextResponse.json({ message: 'Missing update fields' }, { status: 400 });
         }
+
 
         const order = await Order.findByIdAndUpdate(id, updateData, { new: true });
 
@@ -50,8 +52,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     orderId: id,
+                    restaurantId: order.restaurantId,
                     status: order.status,
-                    estimatedTime: order.estimatedTime
+                    estimatedTime: order.estimatedTime,
+                    rejectionReason: order.rejectionReason
                 }),
             });
         } catch (socketError) {

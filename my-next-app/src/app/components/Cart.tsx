@@ -20,9 +20,11 @@ export default function Cart() {
     <Link href={`/customer/${restaurantId}/cart`}>
       <div className="relative">
         <FiShoppingCart className="w-6 h-6" />
-        <span className="absolute -top-2 -right-2   bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-          {totalItems}
-        </span>
+        {totalItems > 0 && (
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+            {totalItems}
+          </span>
+        )}
       </div>
     </Link>
   );
