@@ -41,7 +41,7 @@ export default function cart() {
           </Link>
         </div>
       )}
-      {cartData?.items.length && !isPending && (
+      {cartData?.items.length > 0 && !isPending && (
         <div className="flex flex-col md:flex-row gap-3">
           <div className="w-full md:w-1/2 order-1 md:order-2">
             <OrderOverview items={items} total={cartData?.total} />

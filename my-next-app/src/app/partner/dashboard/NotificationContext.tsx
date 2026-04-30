@@ -38,14 +38,18 @@ export const useNotification = () => {
   return context;
 };
 
+import { useQueryClient } from '@tanstack/react-query';
+
 export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [notifications, setNotifications] = useState<NotificationOrder[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const socket = useSocket();
   const { user } = useUser();
+  const queryClient = useQueryClient();
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   // Play and loop the notification sound
+
   const startNotificationSound = () => {
     if (!soundEnabled) return;
     if (!audioRef.current) {
@@ -70,7 +74,13 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const dismissNotification = (orderId: string) => {
-    setNotifications((prev) => prev.filter((n) => n._id !== orderId));
+    setNotifications((prev) => {
+      const next = prev.filter((n) => n._id !== orderId);
+      if (next.length === 0) {
+        stopNotificationSound();
+      }
+      return next;
+    });
   };
 
   const clearAllNotifications = () => {
@@ -105,12 +115,21 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       socket.on('new-order', (data: { order: NotificationOrder }) => {
         if (data && data.order) {
           addNotification(data.order);
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
+        }
+      });
+      socket.on('order-status-updated', (data: any) => {
+        queryClient.invalidateQueries({ queryKey: ["orders"] });
+        // Auto-dismiss notification if active to stop sound
+        if (data.orderId) {
+          dismissNotification(data.orderId);
         }
       });
     }
 
     return () => {
       socket.off('new-order');
+      socket.off('order-status-updated');
     };
   }, [socket, user?.restaurantId]);
 

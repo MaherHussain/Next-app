@@ -64,20 +64,31 @@ export function dateFormatter(iso: string) {
 }
 
 export function calculateFinalPickupTime(requestedTime: string, estimatedTime: string, createdAt?: string) {
-    if (!estimatedTime || estimatedTime === 'ASAP') return requestedTime || 'ASAP';
+    if (!estimatedTime) return requestedTime || '';
 
     const estimateMinutes = parseInt(estimatedTime) || 0;
-    let baseTime = new Date();
+    let baseTime: Date;
 
-    if (requestedTime && requestedTime !== 'ASAP' && requestedTime !== 'custom time' && requestedTime.includes(':')) {
+    // ASAP orders might send "ASAP" string
+    if (requestedTime === 'ASAP' || !requestedTime || requestedTime === 'custom time') {
+        baseTime = createdAt ? new Date(createdAt) : new Date();
+        // Add the initial 10-minute system buffer for ASAP orders
+        baseTime.setMinutes(baseTime.getMinutes() + 10);
+    } else if (requestedTime.includes(':')) {
         const [hours, minutes] = requestedTime.split(':').map(Number);
+        baseTime = new Date(); // Start with today's date
         if (!isNaN(hours) && !isNaN(minutes)) {
             baseTime.setHours(hours, minutes, 0, 0);
+        } else {
+            baseTime = createdAt ? new Date(createdAt) : new Date();
         }
-    } else if (createdAt) {
-        baseTime = new Date(createdAt);
+    } else {
+        baseTime = createdAt ? new Date(createdAt) : new Date();
     }
 
     baseTime.setMinutes(baseTime.getMinutes() + estimateMinutes);
-    return baseTime.toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' });
+
+    const hh = String(baseTime.getHours()).padStart(2, '0');
+    const mm = String(baseTime.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
 }

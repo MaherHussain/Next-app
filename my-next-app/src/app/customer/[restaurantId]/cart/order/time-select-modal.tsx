@@ -36,7 +36,7 @@ export default function TimeSelectModal({
 
   const handleSave = () => {
     const selectedTime =
-      selectedOption === "ASAP" ? currentTimeRounded() : customTime;
+      selectedOption === "ASAP" ? "ASAP" : customTime;
     onSave(selectedTime);
     onClose();
   };

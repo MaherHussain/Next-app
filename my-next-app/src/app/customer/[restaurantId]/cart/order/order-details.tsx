@@ -71,9 +71,7 @@ function OrderDetails() {
   };
   const [pickupData, setPickupData] = useState<PickupData>(initialpickupData);
 
-  const { mutate, isPending, data, isSuccess } = usePlaceOrder(() =>
-    setPickupData(initialpickupData)
-  );
+  const { mutate, isPending, data, isSuccess } = usePlaceOrder();
   const { items, total, clearCart } = useCart();
   const { data: restaurantData } = useGetRestaurant();
   // TODO: we need to add more options for order method and payment method
@@ -134,6 +132,7 @@ function OrderDetails() {
 
   const [orderStatus, setOrderStatus] = useState<string | null>(null);
   const [estimatedTime, setEstimatedTime] = useState<string | null>(null);
+  const [rejectionReason, setRejectionReason] = useState<string | null>(null);
   const socket = useSocket();
 
   useEffect(() => {
@@ -148,6 +147,7 @@ function OrderDetails() {
         const handleUpdate = (update: any) => {
           if (update.status) setOrderStatus(update.status);
           if (update.estimatedTime) setEstimatedTime(update.estimatedTime);
+          if (update.rejectionReason) setRejectionReason(update.rejectionReason);
 
           if (update.status === 'confirmed') {
             clearCart();
@@ -163,7 +163,7 @@ function OrderDetails() {
 
       // 2. Polling Fallback Logic (Poll every 5 seconds)
       const pollInterval = setInterval(async () => {
-        if (orderStatus === 'confirmed') {
+        if (orderStatus === 'confirmed' || orderStatus === 'rejected') {
           clearInterval(pollInterval);
           return;
         }
@@ -171,12 +171,17 @@ function OrderDetails() {
         try {
           const response = await fetch(`/api/orders/${orderId}`);
           const result = await response.json();
-          if (result.success && result.data.status === 'confirmed') {
-            setOrderStatus('confirmed');
+          if (result.success && (result.data.status === 'confirmed' || result.data.status === 'rejected')) {
+            setOrderStatus(result.data.status);
             if (result.data.estimatedTime) {
               setEstimatedTime(result.data.estimatedTime);
             }
-            clearCart();
+            if (result.data.rejectionReason) {
+              setRejectionReason(result.data.rejectionReason);
+            }
+            if (result.data.status === 'confirmed') {
+              clearCart();
+            }
           }
 
         } catch (err) {
@@ -271,7 +276,7 @@ function OrderDetails() {
       </button>
 
       {isSuccess && (
-        <DialogModal title={orderStatus === 'confirmed' ? "Order Confirmed!" : "Order Placed"}>
+        <DialogModal title={orderStatus === 'confirmed' ? "Order Confirmed!" : orderStatus === 'rejected' ? "Order Cancelled" : "Order Placed"}>
           <div className="space-y-4">
             {orderStatus === 'confirmed' ? (
               <>
@@ -281,12 +286,7 @@ function OrderDetails() {
                   </div>
                   <h3 className="text-xl font-bold text-green-700">The restaurant accepted your order!</h3>
                   <div className="flex flex-col gap-3 w-full max-w-xs mx-auto">
-                    {estimatedTime && (
-                      <div className="bg-green-50 p-3 rounded-lg border border-green-200">
-                        <p className="text-sm text-green-800">Ready in approximately:</p>
-                        <p className="text-2xl font-bold text-green-900">{estimatedTime}</p>
-                      </div>
-                    )}
+
                     <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
                       <p className="text-sm text-blue-800">Final Pickup Time:</p>
                       <p className="text-2xl font-bold text-blue-900">
@@ -297,6 +297,17 @@ function OrderDetails() {
                   <p className="text-gray-600">You can pick up your order once it's ready.</p>
                 </div>
               </>
+            ) : orderStatus === 'rejected' ? (
+              <div className="flex flex-col items-center text-center space-y-3 py-4">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                  <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-red-700">The restaurant could not fulfill your order.</h3>
+
+                <p className="text-gray-600 mt-4">Please try again later or contact the restaurant.</p>
+              </div>
             ) : (
               <>
                 <p className="text-center text-gray-700">{data?.message}</p>
@@ -312,7 +323,7 @@ function OrderDetails() {
               onClick={() => window.location.reload()}
               className="w-full py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-medium transition"
             >
-              {orderStatus === 'confirmed' ? "Done" : "Check Status"}
+              {orderStatus === 'confirmed' || orderStatus === 'rejected' ? "Close" : "Check Status"}
             </button>
           </div>
         </DialogModal>

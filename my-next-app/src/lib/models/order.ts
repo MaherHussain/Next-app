@@ -13,6 +13,7 @@ export interface IOrder extends Document {
     paymentMethod: string
     total: number
     status: string
+    rejectionReason?: string
     restaurantId: Types.ObjectId
     createdAt: string
     updatedAt: string
@@ -55,7 +56,8 @@ const orderSchema: Schema<IOrder> | null = new Schema({
     customerConfirmedTime: { type: Boolean, default: false },
     paymentMethod: { type: String, enum: ["card", "cash", "paypal"], required: true, default: "cash" },
     orderMethod: { type: String, enum: ["delivery", "pickup"], required: true, default: "pickup" },
-    status: { type: String, enum: ['pending', "confirmed", "cancelled", "awaiting-admin", "awaiting-customer"], default: "pending" }
+    status: { type: String, enum: ['pending', "confirmed", "cancelled", "rejected", "new", "awaiting-customer", "ready"], default: "pending" },
+    rejectionReason: { type: String }
 }, { timestamps: true })
 
 orderSchema.pre('validate', async function (next) {

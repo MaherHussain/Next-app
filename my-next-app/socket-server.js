@@ -49,14 +49,19 @@ app.post('/notify-new-order', (req, res) => {
 });
 
 app.post('/notify-order-status-update', (req, res) => {
-  const { orderId, status, estimatedTime } = req.body;
+  const { orderId, restaurantId, status, estimatedTime, rejectionReason } = req.body;
 
   if (!orderId || !status) {
     return res.status(400).json({ error: 'orderId and status are required' });
   }
 
   // Notify the customer in the specific order room
-  io.to(orderId).emit('order-status-updated', { orderId, status, estimatedTime });
+  io.to(orderId).emit('order-status-updated', { orderId, status, estimatedTime, rejectionReason });
+
+  // Also notify the restaurant room so all admin boards refresh
+  if (restaurantId) {
+    io.to(restaurantId).emit('order-status-updated', { orderId, status, estimatedTime, rejectionReason });
+  }
   
   res.json({ success: true });
 });
