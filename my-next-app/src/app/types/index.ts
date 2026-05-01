@@ -35,6 +35,7 @@ export interface Product {
     price: number;
     active?: boolean;
     ingredients?: Ingredient[];
+    imageUrl?: string;
     createdAt?: string;
     updatedAt?: string;
     restaurantId?: string;

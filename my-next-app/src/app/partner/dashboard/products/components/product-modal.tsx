@@ -17,6 +17,7 @@ interface ProductAddModalProps {
     price: number;
     active?: boolean;
     ingredients?: Ingredient[];
+    imageUrl?: string;
   };
   onClose: () => void;
 }
@@ -32,7 +33,8 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
     price: number | "";
     active: boolean;
     ingredients?: string[];
-  }>({ name: "", price: "", active: true, ingredients: [] });
+    imageUrl?: string;
+  }>({ name: "", price: "", active: true, ingredients: [], imageUrl: "" });
 
   const [showInfoPopup, setShowInfoPopup] = useState(false);
 
@@ -49,6 +51,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
         price: productToEdit.price || "",
         active: productToEdit.active ?? true,
         ingredients: ingredientsIds || [],
+        imageUrl: productToEdit.imageUrl || "",
       });
     } else {
       setProductFormData({
@@ -56,6 +59,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
         price: "",
         active: true,
         ingredients: [],
+        imageUrl: "",
       });
     }
   }, [isEditAction, productToEdit]);
@@ -110,6 +114,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
           restaurantId,
           active: productFormData.active,
           ingredients: productFormData.ingredients ?? [],
+          imageUrl: productFormData.imageUrl,
         },
         {
           onSuccess: () => {
@@ -138,6 +143,7 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
             price: Number(productFormData.price),
             active: productFormData.active,
             ingredients: productFormData.ingredients ?? [],
+            imageUrl: productFormData.imageUrl,
           },
         },
         {
@@ -191,6 +197,18 @@ const ProductAddModal: React.FC<ProductAddModalProps> = ({
               min={0}
               step="0.01"
             />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-1 text-gray-700">Image URL</label>
+            <input
+              type="url"
+              name="imageUrl"
+              placeholder="https://example.com/image.jpg"
+              className="w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-orange-500 border-gray-300"
+              value={productFormData.imageUrl}
+              onChange={handleChange}
+            />
+            <p className="text-[10px] text-gray-400 mt-1">Provide a direct link to an image file.</p>
           </div>
           <div>
             <label className="block text-gray-700 mb-2">
