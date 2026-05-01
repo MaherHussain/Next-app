@@ -9,9 +9,10 @@ import {
 
 interface SidebarProps {
   restaurantName?: string;
+  logo?: string;
 }
 
-export default function Sidebar({ restaurantName }: SidebarProps) {
+export default function Sidebar({ restaurantName, logo }: SidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -29,11 +30,17 @@ export default function Sidebar({ restaurantName }: SidebarProps) {
         <div className="px-2">
           {/* Restaurant Logo/Initial */}
           <div className="mb-6 flex justify-center">
-            <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">
-                {restaurantName?.charAt(0) || "R"}
-              </span>
-            </div>
+            {logo ? (
+              <div className="w-10 h-10 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+                <img src={logo} alt={restaurantName} className="w-full h-full object-cover" />
+              </div>
+            ) : (
+                <div className="w-10 h-10 bg-orange-600 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">
+                    {restaurantName?.charAt(0) || "R"}
+                  </span>
+                </div>
+            )}
           </div>
 
           {/* Navigation Items */}

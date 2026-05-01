@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ message: "ID is required" }, { status: 400 });
     }
 
-    const restaurant = await Restaurant.findById(id).select("name address");
+    const restaurant = await Restaurant.findById(id).select("name address openHours logo");
     
     if (!restaurant) {
       return NextResponse.json({ message: "Restaurant not found" }, { status: 404 });

@@ -1,13 +1,12 @@
 import http from "./http";
 
-interface Restaurant {
+export interface RestaurantProfile {
     _id: string;
     name: string;
     address: string;
-    email: string;
-    phone: string;
     logo?: string;
-    openHours?: {
+    cvrNumber?: number;
+    openHours: {
         monday: { start: string; end: string } | null;
         tuesday: { start: string; end: string } | null;
         wednesday: { start: string; end: string } | null;
@@ -16,21 +15,14 @@ interface Restaurant {
         saturday: { start: string; end: string } | null;
         sunday: { start: string; end: string } | null;
     };
-    createdAt: string;
-    updatedAt: string;
 }
 
-interface RestaurantResponse {
-    data: Restaurant;
-}
-
-export const getRestaurant = async (): Promise<RestaurantResponse> => {
-    const response = await http.get("/auth/restaurant");
-    return response.data;
+export const getProfile = async (): Promise<RestaurantProfile> => {
+    const response = await http.get<{ restaurant: RestaurantProfile }>("/partner/profile");
+    return response.data.restaurant;
 };
 
-export const getRestaurantById = async (id: string): Promise<RestaurantResponse> => {
-    const response = await http.get(`/restaurant/${id}`);
+export const updateProfile = async (data: Partial<RestaurantProfile>): Promise<{ message: string; restaurant: RestaurantProfile }> => {
+    const response = await http.put<{ message: string; restaurant: RestaurantProfile }>("/partner/profile", data);
     return response.data;
 };
-

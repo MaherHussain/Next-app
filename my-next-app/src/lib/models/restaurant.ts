@@ -14,6 +14,7 @@ interface IRestaurant extends Document {
         saturday: { start: string, end: string } | null,
         sunday: { start: string, end: string } | null // null because could be closed
     },
+    logo?: string,
     cvrNumber?: number,
     partnerId?: Types.ObjectId,
 }
@@ -30,9 +31,10 @@ const RestaurantSchema = new Schema<IRestaurant>({
         saturday: { start: { type: String }, end: { type: String } },
         sunday: { start: { type: String }, end: { type: String } },
     },
+    logo: { type: String },
     cvrNumber: { type: Number },
     partnerId: { type: Schema.Types.ObjectId, ref: 'Partner' },
-}, { timestamps: true })
+}, { timestamps: true, strict: false })
 
 export default (mongoose.models.Restaurant as Model<IRestaurant>) ||
     mongoose.model<IRestaurant>("Restaurant", RestaurantSchema);
