@@ -19,7 +19,7 @@ export default function PartnerLayout({
 
   const { user, isLoading: userLoading, isError: userError } = useUser();
   const { data } = useGetRestaurant();
-  const restaurantName = data?.data;
+  const restaurantData = data?.data;
   // Loading state
   if (userLoading) {
     return (
@@ -59,14 +59,15 @@ export default function PartnerLayout({
       <NotificationList />
       {/* Header */}
       <Header
-        restaurantName={restaurantName?.name as string}
+          restaurantName={restaurantData?.name}
         partnerName={user?.partnerName}
         email={user.email}
+          logo={restaurantData?.logo}
       />
 
       <div className="flex">
         {/* Sidebar */}
-        <Sidebar restaurantName={restaurantName?.name} />
+          <Sidebar restaurantName={restaurantData?.name} logo={restaurantData?.logo} />
 
         {/* Main content */}
         <main className="flex-1 p-6">{children}</main>

@@ -6,10 +6,11 @@ import { useRouter } from 'next/navigation'
 
 type PropsType =  {
     restaurantName: string | undefined, 
-    partnerName: string,
-    email: string
+  partnerName: string | undefined,
+  email: string | undefined,
+  logo?: string
 }
-export default function Header({restaurantName, partnerName, email}: PropsType) {
+export default function Header({ restaurantName, partnerName, email, logo }: PropsType) {
     const {user} = useUser()
 const { mutate: logout, isPending } = useLogoutPartner();
 const router = useRouter();
@@ -26,8 +27,13 @@ const router = useRouter();
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-          <div className="flex items-center">
-            <h1 className="text-xl font-semibold text-gray-900">
+        <div className="flex items-center gap-3">
+          {logo && (
+            <div className="w-8 h-8 rounded-lg overflow-hidden border border-gray-100 shadow-sm">
+              <img src={logo} alt={restaurantName} className="w-full h-full object-cover" />
+            </div>
+          )}
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-orange-600 to-red-600">
               {restaurantName || 'Restaurant Dashboard'}
             </h1>
           </div>
