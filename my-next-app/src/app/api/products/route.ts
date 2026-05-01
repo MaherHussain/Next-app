@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     await dbConnect()
     try {
-        const { name, price, restaurantId, active, ingredients } = await req.json()
+        const { name, price, restaurantId, active, ingredients, imageUrl } = await req.json()
 
         if (!name || !price || !restaurantId) {
             return NextResponse.json({
@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
         }
         const newProduct = new Product({
-            name, price, restaurantId, ingredients, active: active !== undefined ? active : true
+            name, price, restaurantId, ingredients, imageUrl, active: active !== undefined ? active : true
         })
 
         await newProduct.save()

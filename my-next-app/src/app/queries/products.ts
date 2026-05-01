@@ -12,7 +12,7 @@ export function useGetProducts({ page, limit, restaurantId, activeOnly }: { page
 export function useAddProduct() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ name, price, restaurantId, active, ingredients }: { name: string, price: number, restaurantId: string, active?: boolean, ingredients?: string[] }) => addProduct({ name, price, restaurantId, active, ingredients }),
+        mutationFn: ({ name, price, restaurantId, active, ingredients, imageUrl }: { name: string, price: number, restaurantId: string, active?: boolean, ingredients?: string[], imageUrl?: string }) => addProduct({ name, price, restaurantId, active, ingredients, imageUrl }),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
@@ -40,7 +40,7 @@ export function useDeleteProduct() {
 export function useEditProduct() {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: ({ product }: { product: { id: string, name?: string; price?: number; active?: boolean, ingredients?: string[] } }) => editProduct(product),
+        mutationFn: ({ product }: { product: { id: string, name?: string; price?: number; active?: boolean, ingredients?: string[], imageUrl?: string } }) => editProduct(product),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },

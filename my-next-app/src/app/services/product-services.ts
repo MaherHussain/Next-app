@@ -16,7 +16,7 @@ export async function getProducts({ page, limit, restaurantId, activeOnly }: { p
     const response = await http.get<Response>('/products', { params: { page, limit, restaurantId, activeOnly } })
     return response.data
 }
-export async function addProduct(product: { name: string; price: number; restaurantId: string; active?: boolean, ingredients?: string[] }): Promise<Product> {
+export async function addProduct(product: { name: string; price: number; restaurantId: string; active?: boolean, ingredients?: string[], imageUrl?: string }): Promise<Product> {
 
     const response = await http.post<Product>('/products', product)
     return response.data
@@ -27,7 +27,7 @@ export async function deleteProduct(id: string): Promise<{ success: boolean; mes
     return response.data
 }
 
-export async function editProduct(product: { id: string, name?: string; price?: number; active?: boolean, ingredients?: string[] }): Promise<Product> {
+export async function editProduct(product: { id: string, name?: string; price?: number; active?: boolean, ingredients?: string[], imageUrl?: string }): Promise<Product> {
 
     const response = await http.put<Product>(`/products/${product.id}`, product)
     return response.data
