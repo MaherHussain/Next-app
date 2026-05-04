@@ -5,7 +5,9 @@ interface IPartner extends Document {
     partnerName: string,
     phone: string,
     email: string,
-    password: string
+    password: string,
+    resetPasswordToken?: string,
+    resetPasswordExpires?: Date,
 }
 
 const PartnerSchema: Schema<IPartner> = new Schema({
@@ -23,7 +25,9 @@ const PartnerSchema: Schema<IPartner> = new Schema({
             message: 'Email is not valid',
         }
     },
-    password: { type: String, required: true, }
-}, { timestamps: true })
+    password: { type: String, required: true, },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
+}, { timestamps: true, strict: false })
 export default (mongoose.models.Partner as Model<IPartner>) ||
     mongoose.model<IPartner>("Partner", PartnerSchema);

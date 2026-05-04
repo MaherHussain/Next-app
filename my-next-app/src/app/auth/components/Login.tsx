@@ -130,14 +130,22 @@ export default function Login() {
           </div>
         );
       })}
-      <div className="text-left">
-        {" "}
-        <p>
-          Don't have partner account?{" "}
-          <span className="text-orange-500 hover:text-orange-700">
-            <Link href="/auth/partner/register">Register</Link>
-          </span>
-        </p>
+      <div className="flex flex-col gap-1">
+        <div className="text-right">
+          <Link href="/auth/partner/forgot-password" title="Forgot Password?">
+            <span className="text-sm font-medium text-orange-600 hover:text-orange-700">
+              Forgot password?
+            </span>
+          </Link>
+        </div>
+        <div className="text-left">
+          <p>
+            Don't have partner account?{" "}
+            <span className="text-orange-500 hover:text-orange-700">
+              <Link href="/auth/partner/register">Register</Link>
+            </span>
+          </p>
+        </div>
       </div>
 
       <Button
